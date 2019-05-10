@@ -11,16 +11,17 @@ OBJECTS = $(patsubst %.o,$(OBJ_DIR)/%.o, $(SRC:.cpp=.o))
 
 all: demo
 
-demo: library
-	$(CC) $(CFLAGS) main.cpp -o $(TARGET) $(OBJECTS)
+demo: libpredictor.so
+	$(CC) $(CFLAGS) -o $(TARGET) main.cpp -L./ -lpredictor
 
-library: $(OBJECTS)
+libpredictor.so: $(OBJECTS)
+	$(CC) -shared -fPIC -o libpredictor.so $(OBJECTS)
 
 $(OBJECTS): $(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp
 	mkdir -p $(OBJ_DIR)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
-	rm -f $(OBJECTS) $(TARGET)
+	rm -f $(OBJECTS) $(TARGET) libpredictor.so
 
 .PHONY: demo clean library
