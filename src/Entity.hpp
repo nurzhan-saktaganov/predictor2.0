@@ -3,8 +3,6 @@
 #include <cstdint>
 
 namespace dvmpredictor {
-	using namespace std;
-
 	class Entity {
 	public:
 		Entity(uint32_t id = id_undef);

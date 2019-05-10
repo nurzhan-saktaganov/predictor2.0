@@ -3,8 +3,6 @@
 #include <cstdint>
 
 namespace dvmpredictor {
-	using namespace std;
-
 	class Range {
 	public:
 		Range();

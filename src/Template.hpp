@@ -3,5 +3,8 @@
 #include "Entity.hpp"
 
 namespace dvmpredictor {
-	class Template : public Entity {};
+	class Template : public Entity
+	{
+		using Entity::Entity;
+	};
 }

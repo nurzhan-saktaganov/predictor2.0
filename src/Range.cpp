@@ -1,8 +1,6 @@
 #include "Range.hpp"
 
 namespace dvmpredictor {
-	using namespace std;
-
 	Range::Range() : Range(0, 0) {};
 
 	Range::Range(int32_t start, uint32_t count, bool forward) :

@@ -4,8 +4,6 @@
 #include "DFormat.hpp"
 
 namespace dvmpredictor {
-	using namespace std;
-
 	DFormat::DFormat()
 		: _format(UNDEF)
 	{}

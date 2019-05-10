@@ -1,22 +1,17 @@
 #pragma once
 
-#include <cstdint>
-
-#include "PGrid.hpp"
 #include "Shape.hpp"
 #include "Template.hpp"
 #include "DArray.hpp"
 #include "DRule.hpp"
 
 namespace dvmpredictor {
-	class Predictor {
+	class PGrid {
 	public:
-		Predictor();
+		PGrid();
+		PGrid(Shape shape);
 
-		void init(PGrid pgrid);
-	
 		Template declare_template(Shape shape);
-		// elem size -- size of each element of array
 		DArray declare_darray(Shape shape, uint32_t elem_size);
 
 		void distribute(Template t, DRule rule);
@@ -34,6 +29,13 @@ namespace dvmpredictor {
 		void realign_on(DArray a, DArray b);
 
 	private:
-		PGrid _pgrid;
+		bool _inited() const;
+		bool _is_declared(Template t) const;
+		bool _is_declared(DArray a) const;
+
+		Shape _shape;
+
+		uint32_t _next_template_id;
+		uint32_t _next_darray_id;
 	};
 }

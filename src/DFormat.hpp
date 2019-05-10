@@ -4,8 +4,6 @@
 #include "Ranges.hpp"
 
 namespace dvmpredictor {
-	using namespace std;
-
 	class DFormat {
 	public:
 		DFormat();

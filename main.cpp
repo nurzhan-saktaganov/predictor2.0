@@ -8,5 +8,7 @@ int main(int argc, const char *argv[])
 
 	(void)p;
 
+	std::cout<<"Hello predictor2.0!"<<std::endl;
+
 	return 0;
 }

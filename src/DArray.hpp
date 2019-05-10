@@ -3,5 +3,8 @@
 #include "Entity.hpp"
 
 namespace dvmpredictor {
-	class DArray : public Entity {};
+	class DArray : public Entity
+	{
+		using Entity::Entity;
+	};
 }
