@@ -4,6 +4,7 @@
 #include "Template.hpp"
 #include "DArray.hpp"
 #include "DRule.hpp"
+#include "ARule.hpp"
 
 namespace dvmpredictor {
 	class PGrid {
@@ -20,13 +21,11 @@ namespace dvmpredictor {
 		void redistribute(Template t, DRule rule);
 		void redistribute(DArray a, DRule rule);
 
-		// TODO add align rule
-		void align_on(DArray a, Template t);
-		void align_on(DArray a, DArray b);
+		void align_on(DArray a, Template t, ARule rule);
+		void align_on(DArray a, DArray b, ARule rule);
 
-		// TODO add align rule
-		void realign_on(DArray a, Template t);
-		void realign_on(DArray a, DArray b);
+		void realign_on(DArray a, Template t, ARule rule);
+		void realign_on(DArray a, DArray b, ARule rule);
 
 	private:
 		bool _inited() const;

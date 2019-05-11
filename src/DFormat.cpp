@@ -36,7 +36,8 @@ namespace dvmpredictor {
 		assert(procs > 0);
 		// TODO: for non forward not implemented yet.
 		assert(range.forward());
-
+		// TODO: implement rest formats, now only block format is implemented.
+		assert(_format == BLOCK);
 		// We pass normalized range
 		auto ranges = _distribute_block(Range(0, range.count()), procs);
 
@@ -52,6 +53,7 @@ namespace dvmpredictor {
 	{
 		Ranges ranges(procs);
 
+		// TODO: is this correct way? Can we use only the second way?
 		if (range.count() < procs) {
 			for (uint32_t i = 0; i < range.count(); ++i) {
 				ranges[i] = Range(i, 1);
@@ -60,13 +62,11 @@ namespace dvmpredictor {
 			return ranges;
 		}
 
-		int32_t start = 0;
 		for (uint32_t i = 0; i < procs; ++i) {
-			uint32_t count = (i + 1) * range.count() / procs - i * range.count() / procs;
+			int32_t start = i * range.count() / procs;
+			uint32_t count = (i + 1) * range.count() / procs - start;
 
 			ranges[i] = Range(start, count);
-
-			start += count;
 		}
 
 		return ranges;

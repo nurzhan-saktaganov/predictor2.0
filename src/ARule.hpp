@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "DFormat.hpp"
+#include "AFormat.hpp"
 
 namespace dvmpredictor {
-	using DRule = std::vector<DFormat>;
+	using ARule = std::vector<AFormat>;
 }

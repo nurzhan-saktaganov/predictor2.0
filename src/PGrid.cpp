@@ -57,22 +57,22 @@ namespace dvmpredictor {
 		// TODO
 	}
 
-	void PGrid::align_on(DArray a, Template t)
+	void PGrid::align_on(DArray a, Template t, ARule rule)
 	{
 		// TODO
 	}
 
-	void PGrid::align_on(DArray a, DArray b)
+	void PGrid::align_on(DArray a, DArray b, ARule rule)
 	{
 		// TODO
 	}
 
-	void PGrid::realign_on(DArray a, Template t)
+	void PGrid::realign_on(DArray a, Template t, ARule rule)
 	{
 		// TODO
 	}
 
-	void PGrid::realign_on(DArray a, DArray b)
+	void PGrid::realign_on(DArray a, DArray b, ARule rule)
 	{
 		// TODO
 	}
