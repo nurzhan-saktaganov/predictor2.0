@@ -13,7 +13,7 @@ namespace dvmpredictor {
 
 		assert(!_is_aligned(a));
 
-		auto ensure = std::max(a.id(), on.id());
+		auto ensure = std::max(a.id(), on.id()) + 1;
 
 		if (_aligned_on.size() < ensure)
 			_aligned_on.resize(ensure);

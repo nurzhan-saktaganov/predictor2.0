@@ -78,6 +78,13 @@ namespace dvmpredictor {
 	}
 
 	// private methods
+	Node PGrid::_node(Coord coord) const
+	{
+		assert(_inited());
+		// TODO
+		return Node();
+	}
+
 	bool PGrid::_inited() const
 	{
 		return _shape.size() > 0;

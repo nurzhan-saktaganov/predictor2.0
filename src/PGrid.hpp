@@ -5,6 +5,9 @@
 #include "DArray.hpp"
 #include "DRule.hpp"
 #include "ARule.hpp"
+#include "Coord.hpp"
+#include "Node.hpp"
+#include "Distribution.hpp"
 
 namespace dvmpredictor {
 	class PGrid {
@@ -28,6 +31,8 @@ namespace dvmpredictor {
 		void realign_on(DArray a, DArray b, ARule rule);
 
 	private:
+		Node _node(Coord coord) const;
+
 		bool _inited() const;
 		bool _is_declared(Template t) const;
 		bool _is_declared(DArray a) const;
@@ -36,5 +41,6 @@ namespace dvmpredictor {
 
 		uint32_t _next_template_id;
 		uint32_t _next_darray_id;
+		Distribution _distribution;
 	};
 }

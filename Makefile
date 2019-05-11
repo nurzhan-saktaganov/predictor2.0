@@ -6,8 +6,7 @@ SRC_DIR = src
 OBJ_DIR = obj
 TARGET = demoprog
 
-SRC = DFormat.cpp Distribute.cpp Entity.cpp Predictor.cpp Range.cpp PGrid.cpp\
-	AlignGraph.cpp AFormat.cpp
+SRC = $(patsubst $(SRC_DIR)/%.cpp,%.cpp,$(wildcard $(SRC_DIR)/*.cpp))
 OBJECTS = $(patsubst %.o,$(OBJ_DIR)/%.o, $(SRC:.cpp=.o))
 
 all: demo
