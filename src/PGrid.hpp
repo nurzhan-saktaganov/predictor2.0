@@ -8,6 +8,7 @@
 #include "Coord.hpp"
 #include "Node.hpp"
 #include "Distribution.hpp"
+#include "Meta.hpp"
 
 namespace dvmpredictor {
 	class PGrid {
@@ -37,10 +38,12 @@ namespace dvmpredictor {
 		bool _is_declared(Template t) const;
 		bool _is_declared(DArray a) const;
 
-		Shape _shape;
+		const Shape _shape;
 
 		uint32_t _next_template_id;
 		uint32_t _next_darray_id;
+
 		Distribution _distribution;
+		Meta _meta;
 	};
 }

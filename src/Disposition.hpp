@@ -13,7 +13,7 @@ namespace dvmpredictor {
 		SubShape sub_shape() const;
 
 	private:
-		Node _node;
-		SubShape _sub_shape;
+		const Node _node;
+		const SubShape _sub_shape;
 	};
 }

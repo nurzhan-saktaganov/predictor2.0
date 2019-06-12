@@ -2,6 +2,7 @@
 #include <algorithm>
 
 #include "AlignGraph.hpp"
+#include "Util.hpp"
 
 namespace dvmpredictor {
 	AlignGraph::AlignGraph() {}
@@ -13,13 +14,10 @@ namespace dvmpredictor {
 
 		assert(!_is_aligned(a));
 
-		auto ensure = std::max(a.id(), on.id()) + 1;
+		auto size = std::max(a.id(), on.id()) + 1;
 
-		if (_aligned_on.size() < ensure)
-			_aligned_on.resize(ensure);
-
-		if (_aligner_off.size() < ensure)
-			_aligner_off.resize(ensure);
+		ensure(_aligned_on, size);
+		ensure(_aligner_off, size);
 
 		_aligner_off[a.id()] = on;
 		_aligned_on[on.id()].push_back(a);

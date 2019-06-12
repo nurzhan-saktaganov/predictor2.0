@@ -19,18 +19,22 @@ namespace dvmpredictor {
 	{
 		assert(_inited());
 		assert(_next_template_id != Template::id_undef);
-		// TODO store information about template
 
-		return Template(_next_template_id++);
+		auto t = Template(_next_template_id++);
+		_meta.of_template(t, shape);
+
+		return t;
 	}
 
 	DArray PGrid::declare_darray(Shape shape, uint32_t elem_size)
 	{
 		assert(_inited());
 		assert(_next_darray_id != DArray::id_undef);
-		// TODO store information about darray
 
-		return DArray(_next_darray_id++);
+		auto a = DArray(_next_darray_id++);
+		_meta.of_darray(a, shape, elem_size);
+
+		return a;
 	}
 
 	void PGrid::distribute(Template t, DRule rule)

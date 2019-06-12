@@ -16,8 +16,8 @@ namespace dvmpredictor {
 
 		static const uint32_t dim_undefined = UINT32_MAX;
 	private:
-		int32_t _a;
-		int32_t _b;
-		uint32_t _dimension;
+		const int32_t _a;
+		const int32_t _b;
+		const uint32_t _dimension;
 	};
 }

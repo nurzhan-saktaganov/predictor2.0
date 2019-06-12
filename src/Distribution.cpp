@@ -1,6 +1,7 @@
 #include <cassert>
 
 #include "Distribution.hpp"
+#include "Util.hpp"
 
 namespace dvmpredictor {
 	Distribution::Distribution() {}
@@ -21,11 +22,7 @@ namespace dvmpredictor {
 
 	void Distribution::_dispose(std::vector<Dispositions> &v, uint32_t at, Dispositions d)
 	{
-		auto ensure = at + 1;
-
-		if (v.size() < ensure)
-			v.resize(ensure);
-
+		ensure(v, at + 1);
 		v[at] = d;
 	}
 }
