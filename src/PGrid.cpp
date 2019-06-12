@@ -40,15 +40,17 @@ namespace dvmpredictor {
 	void PGrid::distribute(Template t, DRule rule)
 	{
 		assert(_is_declared(t));
-
-		// TOOD
+		auto shape = _meta.shape(t);
+		auto dispositions = _distribute(shape, rule);
+		_distribution.dispose(t, dispositions);
 	}
 
 	void PGrid::distribute(DArray a, DRule rule)
 	{
 		assert(_is_declared(a));
-
-		// TODO
+		auto shape = _meta.shape(a);
+		auto dispositions = _distribute(shape, rule);
+		_distribution.dispose(a, dispositions);
 	}
 
 	void PGrid::redistribute(Template t, DRule rule)
@@ -102,5 +104,21 @@ namespace dvmpredictor {
 	bool PGrid::_is_declared(DArray a) const
 	{
 		return a.id() < _next_darray_id;
+	}
+
+	Dispositions PGrid::_distribute(Shape sh, DRule rule) const
+	{
+		// We need distribution format for each dimension of pgrid
+		assert(_shape.size() == rule.size());
+
+		for (uint32_t dim = 0; dim < rule.size(); dim++) {
+			auto dformat = rule[dim];
+
+			// TODO we need shape iterator
+			(void)dformat;
+		}
+
+		Dispositions d;
+		return d;
 	}
 }

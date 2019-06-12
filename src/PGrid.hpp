@@ -38,6 +38,8 @@ namespace dvmpredictor {
 		bool _is_declared(Template t) const;
 		bool _is_declared(DArray a) const;
 
+		Dispositions _distribute(Shape sh, DRule r) const;
+
 		const Shape _shape;
 
 		uint32_t _next_template_id;
