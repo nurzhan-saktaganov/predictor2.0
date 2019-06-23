@@ -33,12 +33,13 @@ namespace dvmpredictor {
 
 	private:
 		Node _node(Coord coord) const;
+		Coord _coord(Node n) const;
 
 		bool _inited() const;
 		bool _is_declared(Template t) const;
 		bool _is_declared(DArray a) const;
 
-		Dispositions _distribute(Shape sh, DRule r) const;
+		Dispositions _distribute(Shape sh, DRule rule) const;
 
 		const Shape _shape;
 

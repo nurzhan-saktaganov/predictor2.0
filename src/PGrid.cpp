@@ -1,6 +1,7 @@
 #include <cassert>
 
 #include "PGrid.hpp"
+#include "Util.hpp"
 
 namespace dvmpredictor {
 	PGrid::PGrid() : PGrid(Shape()) {}
@@ -87,8 +88,39 @@ namespace dvmpredictor {
 	Node PGrid::_node(Coord coord) const
 	{
 		assert(_inited());
-		// TODO
-		return Node();
+		assert(_shape.size() == coord.size());
+
+		// imagine `_shape' as a n-dimension rectangle,
+		// we just need enumerate vertexes in this rectangle.
+		uint32_t id = 0;
+		uint32_t order = 1;
+		for (int i = coord.size() - 1; i >= 0; i--) {
+			id += coord[i] * order;
+			order *= _shape[i].count();
+		}
+
+		auto n = Node(id);
+		assert(n.defined());
+		return n;
+	}
+
+	// TODO test
+	Coord PGrid::_coord(Node n) const
+	{
+		assert(_inited());
+		assert(n.defined());
+
+		Coord coord(_shape.size(), 0);
+
+		uint32_t order = volume(_shape);
+		uint32_t id = n.id();
+		for (int i = 0; i < coord.size(); i++) {
+			order /= _shape[i].count();
+			coord[i] = id / order;
+			id = id - coord[i] * order;
+		}
+
+		return coord;
 	}
 
 	bool PGrid::_inited() const
@@ -114,7 +146,7 @@ namespace dvmpredictor {
 		for (uint32_t dim = 0; dim < rule.size(); dim++) {
 			auto dformat = rule[dim];
 
-			// TODO we need shape iterator
+			// TODO
 			(void)dformat;
 		}
 

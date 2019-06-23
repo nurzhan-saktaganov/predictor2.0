@@ -9,4 +9,11 @@ namespace dvmpredictor {
 		if (v.size() < size)
 			v.resize(size);
 	}
+
+	static uint32_t volume(const Shape &sh)
+	{
+		uint32_t v = 1;
+		for (auto &r: sh) v *= r.count();
+		return v;
+	}
 }
