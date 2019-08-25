@@ -18,8 +18,8 @@ namespace dvmpredictor {
 	
 		Template declare_template(Shape shape);
 		// elem size -- size of each element of array
+		// TODO: add shadow info for declare array
 		DArray declare_darray(Shape shape, uint32_t elem_size);
-		// TODO add shadow info
 
 		void distribute(Template t, DRule rule);
 		void distribute(DArray a, DRule rule);

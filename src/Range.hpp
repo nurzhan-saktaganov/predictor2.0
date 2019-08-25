@@ -13,8 +13,8 @@ namespace dvmpredictor {
 		bool forward() const;
 
 	private:
-		const int32_t _start;
-		const uint32_t _count;
-		const bool _forward;
+		int32_t _start;
+		uint32_t _count;
+		bool _forward;
 	};
 }

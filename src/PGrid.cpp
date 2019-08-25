@@ -57,6 +57,8 @@ namespace dvmpredictor {
 	void PGrid::redistribute(Template t, DRule rule)
 	{
 		// TODO
+
+		// TODO add mpi layer
 	}
 
 	void PGrid::redistribute(DArray a, DRule rule)
@@ -105,6 +107,8 @@ namespace dvmpredictor {
 	}
 
 	// TODO test
+	// PGrid has a processor set with the given shape.
+	// In this processor set every node has it's own id.
 	Coord PGrid::_coord(Node n) const
 	{
 		assert(_inited());

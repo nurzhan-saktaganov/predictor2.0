@@ -47,6 +47,7 @@ namespace dvmpredictor {
 		uint32_t _next_darray_id;
 
 		Distribution _distribution;
+		// Meta information about darrays and templates
 		Meta _meta;
 	};
 }

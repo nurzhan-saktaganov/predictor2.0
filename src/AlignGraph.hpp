@@ -19,7 +19,7 @@ namespace dvmpredictor {
 	private:
 		bool _is_aligned(DArray a) const;
 
-		// TODO consider using std::set instead of std::vector for _aligned_on;
+		// BACKLOG: consider using std::set instead of std::vector for _aligned_on;
 		std::vector<DArrays> _aligned_on;
 		std::vector<DArray> _aligner_off;
 	};

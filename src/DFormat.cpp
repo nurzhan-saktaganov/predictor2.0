@@ -34,17 +34,18 @@ namespace dvmpredictor {
 		assert(distributes());
 		assert(range.count() > 0);
 		assert(procs > 0);
-		// TODO: for non forward not implemented yet.
+		// BACKLOG: for non forward not implemented yet.
 		assert(range.forward());
-		// TODO: implement rest formats, now only block format is implemented.
+
 		assert(_format == BLOCK);
 		// We pass normalized range
 		auto ranges = _distribute_block(Range(0, range.count()), procs);
 
 		// Restore initial shift
 		int32_t shift = range.start();
-		for (Range &range: ranges)
+		for (Range &range: ranges) {
 			range = Range(range.start() + shift, range.count());
+		}
 
 		return ranges;
 	}

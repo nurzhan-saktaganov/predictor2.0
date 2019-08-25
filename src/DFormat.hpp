@@ -8,6 +8,7 @@ namespace dvmpredictor {
 	public:
 		DFormat();
 
+		// BACKLOG: implement rest formats, now only block format is implemented.
 		void none();
 		void block();
 
