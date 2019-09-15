@@ -1,5 +1,7 @@
 #pragma once
 
+#include "MPI.hpp"
+
 #include "Shape.hpp"
 #include "Template.hpp"
 #include "DArray.hpp"
@@ -49,5 +51,7 @@ namespace dvmpredictor {
 		Distribution _distribution;
 		// Meta information about darrays and templates
 		Meta _meta;
+
+		mpisimulator::MPI _mpi;
 	};
 }
