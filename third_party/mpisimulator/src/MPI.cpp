@@ -80,4 +80,11 @@ namespace mpisimulator {
 
 		impl->compact();
 	}
+
+	void MPI::barrier()
+	{
+		assert(impl != nullptr);
+
+		impl->barrier();
+	}
 }

@@ -10,13 +10,13 @@ namespace mpisimulator {
 
 	MPIImpl::MPIImpl(uint32_t size, double latency, double bandwidth) :
 		_size(size), _latency(latency), _bandwidth(bandwidth), _nodes(size)
-		{
-			assert(size > 0);
-			assert(latency > 0);
-			assert(bandwidth > 0);
-		}
+	{
+		assert(size > 0);
+		assert(latency > 0);
+		assert(bandwidth > 0);
+	}
 
-		void MPIImpl::send(uint32_t at, uint32_t to, uint64_t bytes)
+	void MPIImpl::send(uint32_t at, uint32_t to, uint64_t bytes)
 	{
 		assert(at < _size);
 
@@ -163,5 +163,10 @@ namespace mpisimulator {
 	{
 		for (uint32_t node = 0; node < _size; node++)
 			wtime(node);
+	}
+
+	void MPIImpl::barrier()
+	{
+		// TODO not implemented yet
 	}
 }
