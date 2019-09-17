@@ -2,7 +2,6 @@
 
 #include <cstdint>
 
-#include "PGrid.hpp"
 #include "Shape.hpp"
 #include "Template.hpp"
 #include "DArray.hpp"
@@ -10,12 +9,16 @@
 #include "ARule.hpp"
 
 namespace dvmpredictor {
+	class PredictorImpl;
+
 	class Predictor {
 	public:
 		Predictor();
+		// TODO constructor with params
+		Predictor(const Predictor &p);
+		Predictor& operator=(const Predictor &p);
+		~Predictor();
 
-		void init(PGrid pgrid);
-	
 		Template declare_template(Shape shape);
 		// elem size -- size of each element of array
 		// TODO: add shadow info for declare array
@@ -33,8 +36,7 @@ namespace dvmpredictor {
 
 		void realign_on(DArray a, Template t, ARule rule);
 		void realign_on(DArray a, DArray b, ARule rule);
-
 	private:
-		PGrid _pgrid;
+		PredictorImpl *impl;
 	};
-}
+};

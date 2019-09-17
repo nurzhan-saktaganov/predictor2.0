@@ -1,22 +1,18 @@
 #pragma once
 
-#include "MPI.hpp"
+#include <cstdint>
 
+#include "PGrid.hpp"
 #include "Shape.hpp"
 #include "Template.hpp"
 #include "DArray.hpp"
 #include "DRule.hpp"
 #include "ARule.hpp"
-#include "Coord.hpp"
-#include "Node.hpp"
-#include "Distribution.hpp"
-#include "Meta.hpp"
 
 namespace dvmpredictor {
-	class PGrid {
+	class PredictorImpl {
 	public:
-		PGrid();
-		PGrid(Shape shape);
+		PredictorImpl();
 
 		Template declare_template(Shape shape);
 		DArray declare_darray(Shape shape, uint32_t elem_size);
@@ -34,24 +30,6 @@ namespace dvmpredictor {
 		void realign_on(DArray a, DArray b, ARule rule);
 
 	private:
-		Node _node(Coord coord) const;
-		Coord _coord(Node n) const;
-
-		bool _inited() const;
-		bool _is_declared(Template t) const;
-		bool _is_declared(DArray a) const;
-
-		Dispositions _distribute(Shape sh, DRule rule) const;
-
-		Shape _shape;
-
-		uint32_t _next_template_id;
-		uint32_t _next_darray_id;
-
-		Distribution _distribution;
-		// Meta information about darrays and templates
-		Meta _meta;
-
-		mpisimulator::MPI _mpi;
+		PGrid _pgrid;
 	};
 }

@@ -13,6 +13,6 @@ namespace dvmpredictor {
 		static const uint32_t id_undef = UINT32_MAX;
 
 	private:
-		const uint32_t _id;
+		uint32_t _id;
 	};
 }

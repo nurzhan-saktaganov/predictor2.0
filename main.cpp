@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "src/Predictor.hpp"
+#include "Predictor.hpp"
 
 int main(int argc, const char *argv[])
 {
