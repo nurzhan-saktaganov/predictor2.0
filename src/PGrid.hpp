@@ -16,7 +16,7 @@ namespace dvmpredictor {
 	class PGrid {
 	public:
 		PGrid();
-		PGrid(Shape shape);
+		PGrid(Shape shape, double latency, double bandwidth);
 
 		Template declare_template(Shape shape);
 		DArray declare_darray(Shape shape, uint32_t elem_size);

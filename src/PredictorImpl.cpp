@@ -1,7 +1,11 @@
 #include "PredictorImpl.hpp"
 
 namespace dvmpredictor {
-	PredictorImpl::PredictorImpl() {};
+	PredictorImpl::PredictorImpl() {}
+
+	PredictorImpl::PredictorImpl(Shape pgrid, double latency, double bandwidth) :
+		_pgrid(pgrid, latency, bandwidth)
+	{}
 
 	Template PredictorImpl::declare_template(Shape shape)
 	{

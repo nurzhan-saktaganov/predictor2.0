@@ -1,12 +1,13 @@
 #include <cassert>
 
+#include "MPI.hpp"
 #include "PGrid.hpp"
 #include "Util.hpp"
 
 namespace dvmpredictor {
-	PGrid::PGrid() : PGrid(Shape()) {}
+	PGrid::PGrid() : PGrid(Shape(), 0, 0) {}
 
-	PGrid::PGrid(Shape shape)
+	PGrid::PGrid(Shape shape, double latency, double bandwidth)
 		: _shape(shape), _next_template_id(0), _next_darray_id(0)
 	{
 		for (Range r: shape) {
@@ -14,6 +15,9 @@ namespace dvmpredictor {
 			assert(r.count() > 0);
 			assert(r.forward() == true);
 		}
+
+		if (_inited())
+			_mpi = mpisimulator::MPI(volume(shape), latency, bandwidth);
 	}
 
 	Template PGrid::declare_template(Shape shape)

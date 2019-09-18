@@ -6,6 +6,10 @@ namespace dvmpredictor {
 		impl(nullptr)
 	{}
 
+	Predictor::Predictor(Shape pgrid, double latency, double bandwidth) :
+		impl(new PredictorImpl(pgrid, latency, bandwidth))
+	{}
+
 	Predictor::Predictor(const Predictor &p) :
 		impl(nullptr)
 	{

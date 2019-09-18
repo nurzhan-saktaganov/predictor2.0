@@ -14,7 +14,7 @@ namespace dvmpredictor {
 	class Predictor {
 	public:
 		Predictor();
-		// TODO constructor with params
+		Predictor(Shape pgrid, double latency, double bandwidth);
 		Predictor(const Predictor &p);
 		Predictor& operator=(const Predictor &p);
 		~Predictor();

@@ -13,6 +13,7 @@ namespace dvmpredictor {
 	class PredictorImpl {
 	public:
 		PredictorImpl();
+		PredictorImpl(Shape pgrid, double latency, double bandwidth);
 
 		Template declare_template(Shape shape);
 		DArray declare_darray(Shape shape, uint32_t elem_size);
