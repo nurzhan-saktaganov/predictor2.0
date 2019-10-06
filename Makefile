@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -Wall -Werror -std=c++11
+CFLAGS = -Wall -Werror -std=c++11 -fPIC
 LDFLAGS =
 
 INC=-Iinclude -Ithird_party/mpisimulator/include
@@ -23,6 +23,7 @@ mpisimulator:
 	make -C third_party/mpisimulator
 
 $(LIB_DIR)/libpredictor.so: $(OBJECTS) third_party
+	mkdir -p $(LIB_DIR)
 	$(CC) $(LD) -shared -fPIC -o $(LIB_DIR)/libpredictor.so $(OBJECTS) -lmpisimulator
 
 $(OBJECTS): $(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp

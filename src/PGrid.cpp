@@ -122,7 +122,7 @@ namespace dvmpredictor {
 
 		uint32_t order = volume(_shape);
 		uint32_t id = n.id();
-		for (int i = 0; i < coord.size(); i++) {
+		for (std::size_t i = 0; i < coord.size(); i++) {
 			order /= _shape[i].count();
 			coord[i] = id / order;
 			id = id - coord[i] * order;

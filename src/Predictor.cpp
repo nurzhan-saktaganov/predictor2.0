@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include "Predictor.hpp"
 #include "PredictorImpl.hpp"
 
