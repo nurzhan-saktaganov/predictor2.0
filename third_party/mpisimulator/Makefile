@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -Wall -Werror -std=c++11 -g
+CFLAGS = -Wall -Werror -std=c++11 -g -fPIC
 LDFLAGS =
 
 INC_DIR = include

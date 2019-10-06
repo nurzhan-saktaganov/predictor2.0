@@ -20,14 +20,12 @@ namespace mpisimulator {
 	{
 		assert(at < _size);
 
-		struct operation op = {
-			.type = OperationType::send,
-			.at = at,
-			.send = {
-				.to = to,
-				.bytes = bytes,
-			},
-		};
+		struct operation op;
+
+		op.type = OperationType::send;
+		op.at = at;
+		op.send.to = to;
+		op.send.bytes = bytes;
 
 		OperationQueue &ops = _nodes[at].ops;
 		ops.push(op);
@@ -37,14 +35,12 @@ namespace mpisimulator {
 	{
 		assert(at < _size);
 
-		struct operation op = {
-			.type = OperationType::recv,
-			.at = at,
-			.recv = {
-				.from = from,
-				.bytes = bytes,
-			},
-		};
+		struct operation op;
+
+		op.type = OperationType::recv;
+		op.at = at;
+		op.recv.from = from;
+		op.recv.bytes = bytes;
 
 		OperationQueue &ops = _nodes[at].ops;
 		ops.push(op);
@@ -55,13 +51,11 @@ namespace mpisimulator {
 		assert(at < _size);
 		assert(time > 0);
 
-		struct operation op = {
-			.type = OperationType::skip,
-			.at = at,
-			.skip = {
-				.time = time,
-			},
-		};
+		struct operation op;
+
+		op.type = OperationType::skip;
+		op.at = at;
+		op.skip.time = time;
 
 		OperationQueue &ops = _nodes[at].ops;
 		ops.push(op);
