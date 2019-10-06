@@ -20,7 +20,7 @@ namespace mpisimulator {
 	{
 		assert(at < _size);
 
-		struct operation op;
+		struct operation op = {};
 
 		op.type = OperationType::send;
 		op.at = at;
@@ -35,7 +35,7 @@ namespace mpisimulator {
 	{
 		assert(at < _size);
 
-		struct operation op;
+		struct operation op = {};
 
 		op.type = OperationType::recv;
 		op.at = at;
@@ -51,7 +51,7 @@ namespace mpisimulator {
 		assert(at < _size);
 		assert(time > 0);
 
-		struct operation op;
+		struct operation op = {};
 
 		op.type = OperationType::skip;
 		op.at = at;
