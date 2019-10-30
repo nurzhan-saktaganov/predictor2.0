@@ -11,6 +11,7 @@
 #include "Node.hpp"
 #include "Distribution.hpp"
 #include "Meta.hpp"
+#include "Shadow.hpp"
 
 namespace dvmpredictor {
 	class PGrid {
@@ -19,7 +20,7 @@ namespace dvmpredictor {
 		PGrid(Shape shape, double latency, double bandwidth);
 
 		Template declare_template(Shape shape);
-		DArray declare_darray(Shape shape, uint32_t elem_size);
+		DArray declare_darray(Shape shape, Shadow shadow, uint32_t elem_size);
 
 		void distribute(Template t, DRule rule);
 		void distribute(DArray a, DRule rule);

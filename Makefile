@@ -6,7 +6,7 @@ INC=-Iinclude -Ithird_party/mpisimulator/include
 SRC_DIR = src
 OBJ_DIR = obj
 LIB_DIR = lib
-LD = -Lthird_party/mpisimulator/lib
+LD = -Lthird_party/mpisimulator/lib -L$(LIB_DIR)
 TARGET = demoprog
 
 SRC = $(patsubst $(SRC_DIR)/%.cpp,%.cpp,$(wildcard $(SRC_DIR)/*.cpp))
@@ -15,7 +15,7 @@ OBJECTS = $(patsubst %.o,$(OBJ_DIR)/%.o, $(SRC:.cpp=.o))
 all: demoprog
 
 demoprog: main.cpp $(LIB_DIR)/libpredictor.so third_party
-	$(CC) $(CFLAGS) $(INC) -o $(TARGET) main.cpp -L$(LIB_DIR) -lpredictor
+	$(CC) $(CFLAGS) $(INC) -o $(TARGET) $(LD) main.cpp -lpredictor -lmpisimulator
 
 third_party: mpisimulator
 

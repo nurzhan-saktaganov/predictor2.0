@@ -6,16 +6,18 @@
 namespace dvmpredictor {
 	Meta::Meta() {}
 
-	void Meta::of_darray(DArray a, Shape sh, int elem_size)
+	void Meta::of_darray(DArray a, Shape sh, Shadow sw, int elem_size)
 	{
 		assert(a.defined());
 
 		auto at = a.id();
 
 		ensure(_darray_shape, at + 1);
+		ensure(_darray_shadow, at + 1);
 		ensure(_elem_size, at + 1);
 
 		_darray_shape[at] = sh;
+		_darray_shadow[at] = sw;
 		_elem_size[at] = elem_size;
 	}
 
@@ -41,6 +43,13 @@ namespace dvmpredictor {
 		assert(a.defined());
 
 		return _darray_shape[a.id()];
+	}
+
+	Shadow Meta::shadow(DArray a) const
+	{
+		assert(a.defined());
+
+		return _darray_shadow[a.id()];
 	}
 
 	int Meta::elem_size(DArray a) const

@@ -51,11 +51,11 @@ namespace dvmpredictor {
 		return impl->declare_template(shape);
 	}
 
-	DArray Predictor::declare_darray(Shape shape, uint32_t elem_size)
+	DArray Predictor::declare_darray(Shape shape, Shadow shadow, uint32_t elem_size)
 	{
 		assert(impl != nullptr);
 
-		return impl->declare_darray(shape, elem_size);
+		return impl->declare_darray(shape, shadow, elem_size);
 	}
 
 	void Predictor::distribute(Template t, DRule rule)

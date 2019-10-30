@@ -31,13 +31,13 @@ namespace dvmpredictor {
 		return t;
 	}
 
-	DArray PGrid::declare_darray(Shape shape, uint32_t elem_size)
+	DArray PGrid::declare_darray(Shape shape, Shadow shadow, uint32_t elem_size)
 	{
 		assert(_inited());
 		assert(_next_darray_id != DArray::id_undef);
 
 		auto a = DArray(_next_darray_id++);
-		_meta.of_darray(a, shape, elem_size);
+		_meta.of_darray(a, shape, shadow, elem_size);
 
 		return a;
 	}

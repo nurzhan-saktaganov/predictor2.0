@@ -12,9 +12,9 @@ namespace dvmpredictor {
 		return _pgrid.declare_template(shape);
 	}
 
-	DArray PredictorImpl::declare_darray(Shape shape, uint32_t elem_size)
+	DArray PredictorImpl::declare_darray(Shape shape, Shadow shadow, uint32_t elem_size)
 	{
-		return _pgrid.declare_darray(shape, elem_size);
+		return _pgrid.declare_darray(shape, shadow, elem_size);
 	}
 
 	void PredictorImpl::distribute(Template t, DRule rule)

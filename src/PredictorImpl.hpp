@@ -8,6 +8,7 @@
 #include "DArray.hpp"
 #include "DRule.hpp"
 #include "ARule.hpp"
+#include "Shadow.hpp"
 
 namespace dvmpredictor {
 	class PredictorImpl {
@@ -16,7 +17,7 @@ namespace dvmpredictor {
 		PredictorImpl(Shape pgrid, double latency, double bandwidth);
 
 		Template declare_template(Shape shape);
-		DArray declare_darray(Shape shape, uint32_t elem_size);
+		DArray declare_darray(Shape shape, Shadow shadow, uint32_t elem_size);
 
 		void distribute(Template t, DRule rule);
 		void distribute(DArray a, DRule rule);

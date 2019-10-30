@@ -7,6 +7,7 @@
 #include "DArray.hpp"
 #include "DRule.hpp"
 #include "ARule.hpp"
+#include "Shadow.hpp"
 
 namespace dvmpredictor {
 	class PredictorImpl;
@@ -21,8 +22,7 @@ namespace dvmpredictor {
 
 		Template declare_template(Shape shape);
 		// elem size -- size of each element of array
-		// TODO: add shadow info for declare array
-		DArray declare_darray(Shape shape, uint32_t elem_size);
+		DArray declare_darray(Shape shape, Shadow shadow, uint32_t elem_size);
 
 		void distribute(Template t, DRule rule);
 		void distribute(DArray a, DRule rule);
