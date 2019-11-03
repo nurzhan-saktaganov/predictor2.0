@@ -60,34 +60,46 @@ namespace dvmpredictor {
 
 	void PGrid::redistribute(Template t, DRule rule)
 	{
-		// TODO
+		assert(_is_declared(t));
+		assert(_is_distributed(t));
 
-		// TODO add mpi layer
+		// TODO ask: can we redistribute template that aligned on something? Let's assume we can't.
+		// assert(!_align_graph.is_aligned(t));
+
+		// Perform nested distribution using Deepth-first search
 	}
 
 	void PGrid::redistribute(DArray a, DRule rule)
 	{
-		// TODO
+		// TODO redistribute darray
 	}
 
 	void PGrid::align_on(DArray a, Template t, ARule rule)
 	{
-		// TODO
+		assert(_is_declared(a));
+		// assert(!_align_graph.is_aligned(a));
+
+		assert(_is_declared(t));
+		assert(_is_distributed(t));
+
+		// _align_graph.align(a, t);
+
+		// TODO align array on template
 	}
 
 	void PGrid::align_on(DArray a, DArray b, ARule rule)
 	{
-		// TODO
+		// TODO align array on array
 	}
 
 	void PGrid::realign_on(DArray a, Template t, ARule rule)
 	{
-		// TODO
+		// TODO realign array on template
 	}
 
 	void PGrid::realign_on(DArray a, DArray b, ARule rule)
 	{
-		// TODO
+		// TODO realign array on array
 	}
 
 	// private methods
@@ -110,7 +122,6 @@ namespace dvmpredictor {
 		return n;
 	}
 
-	// TODO test
 	// PGrid has a processor set with the given shape.
 	// In this processor set every node has it's own id.
 	Coord PGrid::_coord(Node n) const
@@ -146,19 +157,44 @@ namespace dvmpredictor {
 		return a.id() < _next_darray_id;
 	}
 
+	bool PGrid::_is_distributed(Template t) const
+	{
+		// TODO _is_distributed for template
+		return false;
+	}
+
+	bool PGrid::_is_distributed(DArray a) const
+	{
+		// TODO _is_distributed for DArray
+		return false;
+	}
+
 	Dispositions PGrid::_distribute(Shape sh, DRule rule) const
 	{
-		// We need distribution format for each dimension of pgrid
+		// TODO We need distribution format for each dimension of pgrid
 		assert(_shape.size() == rule.size());
 
 		for (uint32_t dim = 0; dim < rule.size(); dim++) {
 			auto dformat = rule[dim];
 
-			// TODO
+			// TODO _distribute
 			(void)dformat;
 		}
 
 		Dispositions d;
 		return d;
+	}
+
+	Dispositions PGrid::_align(Shape sh, ARule rule) const
+	{
+		// TODO _align shape on arule
+
+		Dispositions d;
+		return d;
+	}
+
+	void PGrid::_redispose(Dispositions before, Dispositions after)
+	{
+		// TODO _redispose
 	}
 }

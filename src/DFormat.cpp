@@ -54,7 +54,6 @@ namespace dvmpredictor {
 	{
 		Ranges ranges(procs);
 
-		// TODO: is this correct way? Can we use only the second way?
 		if (range.count() < procs) {
 			for (uint32_t i = 0; i < range.count(); ++i) {
 				ranges[i] = Range(i, 1);
