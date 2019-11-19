@@ -1,5 +1,4 @@
-#include <cassert>
-
+#include "expect.hpp"
 #include "Util.hpp"
 #include "AlignTree.hpp"
 
@@ -8,7 +7,7 @@ namespace dvmpredictor {
 
 	void AlignTree::align(DArray a, Template on)
 	{
-		assert(!_is_aligned(a));
+		expect(!_is_aligned(a));
 
 		_set_aligner(a, Aligner(on));
 		_set_aligned(_aligned_on_template, on.id(), a);
@@ -16,7 +15,7 @@ namespace dvmpredictor {
 
 	void AlignTree::align(DArray a, DArray on)
 	{
-		assert(!_is_aligned(a));
+		expect(!_is_aligned(a));
 
 		_set_aligner(a, Aligner(on));
 		_set_aligned(_aligned_on_darray, on.id(), a);
@@ -24,7 +23,7 @@ namespace dvmpredictor {
 
 	void AlignTree::realign(DArray a, Template on)
 	{
-		assert(_is_aligned(a));
+		expect(_is_aligned(a));
 
 		_clear_aligned(a);
 
@@ -34,7 +33,7 @@ namespace dvmpredictor {
 
 	void AlignTree::realign(DArray a, DArray on)
 	{
-		assert(_is_aligned(a));
+		expect(_is_aligned(a));
 
 		_clear_aligned(a);
 
@@ -44,7 +43,7 @@ namespace dvmpredictor {
 
 	Aligner AlignTree::_aligner(DArray a) const
 	{
-		assert(a.defined());
+		must(a.defined());
 
 		if (a.id() >= _aligner_of_darray.size())
 			return Aligner();
@@ -70,11 +69,11 @@ namespace dvmpredictor {
 
 	void AlignTree::_clear_aligned(DArray a)
 	{
-		assert(a.defined());
+		must(a.defined());
 
 		auto aligner = _aligner(a);
 
-		assert(aligner.type() != AlignerType::UNDEF);
+		must(aligner.type() != AlignerType::UNDEF);
 
 		if (aligner.type() == AlignerType::TEMPLATE)
 			_remove_aligned(_aligned_on_template, aligner.templ().id(), a);
@@ -84,7 +83,7 @@ namespace dvmpredictor {
 
 	void AlignTree::_set_aligned(std::vector<DArrays> &v, uint32_t at, DArray aligned)
 	{
-		assert(aligned.defined());
+		must(aligned.defined());
 
 		ensure(v, at + 1);
 
@@ -95,15 +94,15 @@ namespace dvmpredictor {
 
 	void AlignTree::_remove_aligned(std::vector<DArrays> &v, uint32_t at, DArray aligned)
 	{
-		assert(aligned.defined());
-		assert(at + 1 <= v.size());
+		must(aligned.defined());
+		must(at + 1 <= v.size());
 
 		DArrays darrays = v[at];
 
 		for (uint32_t i = 0; i < darrays.size(); i++) {
 			DArray &current = darrays[i];
 
-			assert(current.defined());
+			must(current.defined());
 
 			if (current.id() == aligned.id()) {
 				std::swap(darrays[i], darrays[v.size() - 1]);

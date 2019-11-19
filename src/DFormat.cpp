@@ -1,6 +1,6 @@
-#include <cassert>
 #include <cstdint>
 
+#include "expect.hpp"
 #include "DFormat.hpp"
 
 namespace dvmpredictor {
@@ -10,34 +10,34 @@ namespace dvmpredictor {
 
 	bool DFormat::distributes() const
 	{
-		assert(_format != UNDEF);
+		expect(_format != UNDEF);
 
 		return _format != NONE;
 	}
 
 	void DFormat::none()
 	{
-		assert(_format == UNDEF);
+		expect(_format == UNDEF);
 
 		_format = NONE;
 	}
 
 	void DFormat::block()
 	{
-		assert(_format == UNDEF);
+		expect(_format == UNDEF);
 
 		_format = BLOCK;
 	}
 
 	Ranges DFormat::distribute(Range range, uint32_t procs) const
 	{
-		assert(distributes());
-		assert(range.count() > 0);
-		assert(procs > 0);
+		expect(distributes());
+		expect(range.count() > 0);
+		expect(procs > 0);
 		// BACKLOG: for non forward not implemented yet.
-		assert(range.forward());
+		expect(range.forward());
 
-		assert(_format == BLOCK);
+		expect(_format == BLOCK);
 		// We pass normalized range
 		auto ranges = _distribute_block(Range(0, range.count()), procs);
 

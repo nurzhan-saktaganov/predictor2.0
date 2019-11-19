@@ -1,5 +1,4 @@
-#include <cassert>
-
+#include "expect.hpp"
 #include "Distribution.hpp"
 #include "Util.hpp"
 
@@ -8,14 +7,14 @@ namespace dvmpredictor {
 
 	void Distribution::dispose(Template t, Dispositions d)
 	{
-		assert(t.defined());
+		expect(t.defined());
 
 		_dispose(_templates_dispositions, t.id(), d);
 	}
 
 	void Distribution::dispose(DArray a, Dispositions d)
 	{
-		assert(a.defined());
+		expect(a.defined());
 
 		_dispose(_darray_dispositions, a.id(), d);
 	}

@@ -1,5 +1,4 @@
-#include <cassert>
-
+#include "expect.hpp"
 #include "Meta.hpp"
 #include "Util.hpp"
 
@@ -8,7 +7,7 @@ namespace dvmpredictor {
 
 	void Meta::of_darray(DArray a, Shape sh, Shadow sw, int elem_size)
 	{
-		assert(a.defined());
+		expect(a.defined());
 
 		auto at = a.id();
 
@@ -23,7 +22,7 @@ namespace dvmpredictor {
 
 	void Meta::of_template(Template t, Shape sh)
 	{
-		assert(t.defined());
+		expect(t.defined());
 
 		auto at = t.id();
 
@@ -33,28 +32,28 @@ namespace dvmpredictor {
 
 	Shape Meta::shape(Template t) const
 	{
-		assert(t.defined());
+		expect(t.defined());
 
 		return _template_shape[t.id()];
 	}
 
 	Shape Meta::shape(DArray a) const
 	{
-		assert(a.defined());
+		expect(a.defined());
 
 		return _darray_shape[a.id()];
 	}
 
 	Shadow Meta::shadow(DArray a) const
 	{
-		assert(a.defined());
+		expect(a.defined());
 
 		return _darray_shadow[a.id()];
 	}
 
 	int Meta::elem_size(DArray a) const
 	{
-		assert(a.defined());
+		expect(a.defined());
 
 		return _elem_size[a.id()];
 	}

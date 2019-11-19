@@ -1,5 +1,4 @@
-#include <cassert>
-
+#include "expect.hpp"
 #include "Predictor.hpp"
 #include "PredictorImpl.hpp"
 
@@ -46,70 +45,70 @@ namespace dvmpredictor {
 
 	Template Predictor::declare_template(Shape shape)
 	{
-		assert(impl != nullptr);
+		expect(impl != nullptr);
 
 		return impl->declare_template(shape);
 	}
 
 	DArray Predictor::declare_darray(Shape shape, Shadow shadow, uint32_t elem_size)
 	{
-		assert(impl != nullptr);
+		expect(impl != nullptr);
 
 		return impl->declare_darray(shape, shadow, elem_size);
 	}
 
 	void Predictor::distribute(Template t, DRule rule)
 	{
-		assert(impl != nullptr);
+		expect(impl != nullptr);
 
 		return impl->distribute(t, rule);
 	}
 
 	void Predictor::distribute(DArray a, DRule rule)
 	{
-		assert(impl != nullptr);
+		expect(impl != nullptr);
 
 		return impl->distribute(a, rule);
 	}
 
 	void Predictor::redistribute(Template t, DRule rule)
 	{
-		assert(impl != nullptr);
+		expect(impl != nullptr);
 
 		return impl->redistribute(t, rule);
 	}
 
 	void Predictor::redistribute(DArray a, DRule rule)
 	{
-		assert(impl != nullptr);
+		expect(impl != nullptr);
 
 		return impl->redistribute(a, rule);
 	}
 
 	void Predictor::align_on(DArray a, Template t, ARule rule)
 	{
-		assert(impl != nullptr);
+		expect(impl != nullptr);
 
 		return impl->align_on(a, t, rule);
 	}
 
 	void Predictor::align_on(DArray a, DArray b, ARule rule)
 	{
-		assert(impl != nullptr);
+		expect(impl != nullptr);
 
 		return impl->align_on(a, b, rule);
 	}
 
 	void Predictor::realign_on(DArray a, Template t, ARule rule)
 	{
-		assert(impl != nullptr);
+		expect(impl != nullptr);
 
 		return impl->realign_on(a, t, rule);
 	}
 
 	void Predictor::realign_on(DArray a, DArray b, ARule rule)
 	{
-		assert(impl != nullptr);
+		expect(impl != nullptr);
 
 		return impl->realign_on(a, b, rule);
 	}

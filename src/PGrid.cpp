@@ -1,5 +1,4 @@
-#include <cassert>
-
+#include "expect.hpp"
 #include "MPI.hpp"
 #include "PGrid.hpp"
 #include "Util.hpp"
@@ -11,9 +10,9 @@ namespace dvmpredictor {
 		: _shape(shape), _next_template_id(0), _next_darray_id(0)
 	{
 		for (Range r: shape) {
-			assert(r.start() == 0);
-			assert(r.count() > 0);
-			assert(r.forward() == true);
+			expect(r.start() == 0);
+			expect(r.count() > 0);
+			expect(r.forward() == true);
 		}
 
 		if (_inited())
@@ -22,8 +21,8 @@ namespace dvmpredictor {
 
 	Template PGrid::declare_template(Shape shape)
 	{
-		assert(_inited());
-		assert(_next_template_id != Template::id_undef);
+		expect(_inited());
+		expect(_next_template_id != Template::id_undef);
 
 		auto t = Template(_next_template_id++);
 		_meta.of_template(t, shape);
@@ -33,8 +32,8 @@ namespace dvmpredictor {
 
 	DArray PGrid::declare_darray(Shape shape, Shadow shadow, uint32_t elem_size)
 	{
-		assert(_inited());
-		assert(_next_darray_id != DArray::id_undef);
+		expect(_inited());
+		expect(_next_darray_id != DArray::id_undef);
 
 		auto a = DArray(_next_darray_id++);
 		_meta.of_darray(a, shape, shadow, elem_size);
@@ -44,7 +43,7 @@ namespace dvmpredictor {
 
 	void PGrid::distribute(Template t, DRule rule)
 	{
-		assert(_is_declared(t));
+		expect(_is_declared(t));
 		auto shape = _meta.shape(t);
 		auto dispositions = _distribute(shape, rule);
 		_distribution.dispose(t, dispositions);
@@ -52,7 +51,7 @@ namespace dvmpredictor {
 
 	void PGrid::distribute(DArray a, DRule rule)
 	{
-		assert(_is_declared(a));
+		expect(_is_declared(a));
 		auto shape = _meta.shape(a);
 		auto dispositions = _distribute(shape, rule);
 		_distribution.dispose(a, dispositions);
@@ -60,8 +59,8 @@ namespace dvmpredictor {
 
 	void PGrid::redistribute(Template t, DRule rule)
 	{
-		assert(_is_declared(t));
-		assert(_is_distributed(t));
+		expect(_is_declared(t));
+		expect(_is_distributed(t));
 
 		// TODO ask: can we redistribute template that aligned on something? Let's assume we can't.
 		// assert(!_align_graph.is_aligned(t));
@@ -76,11 +75,11 @@ namespace dvmpredictor {
 
 	void PGrid::align_on(DArray a, Template t, ARule rule)
 	{
-		assert(_is_declared(a));
+		expect(_is_declared(a));
 		// assert(!_align_graph.is_aligned(a));
 
-		assert(_is_declared(t));
-		assert(_is_distributed(t));
+		expect(_is_declared(t));
+		expect(_is_distributed(t));
 
 		// _align_graph.align(a, t);
 
@@ -105,8 +104,8 @@ namespace dvmpredictor {
 	// private methods
 	Node PGrid::_node(Coord coord) const
 	{
-		assert(_inited());
-		assert(_shape.size() == coord.size());
+		must(_inited());
+		must(_shape.size() == coord.size());
 
 		// imagine `_shape' as a n-dimension rectangle,
 		// we just need enumerate vertexes in this rectangle.
@@ -118,7 +117,7 @@ namespace dvmpredictor {
 		}
 
 		auto n = Node(id);
-		assert(n.defined());
+		must(n.defined());
 		return n;
 	}
 
@@ -126,8 +125,8 @@ namespace dvmpredictor {
 	// In this processor set every node has it's own id.
 	Coord PGrid::_coord(Node n) const
 	{
-		assert(_inited());
-		assert(n.defined());
+		must(_inited());
+		must(n.defined());
 
 		Coord coord(_shape.size(), 0);
 
@@ -172,7 +171,7 @@ namespace dvmpredictor {
 	Dispositions PGrid::_distribute(Shape sh, DRule rule) const
 	{
 		// TODO We need distribution format for each dimension of pgrid
-		assert(_shape.size() == rule.size());
+		must(_shape.size() == rule.size());
 
 		for (uint32_t dim = 0; dim < rule.size(); dim++) {
 			auto dformat = rule[dim];
