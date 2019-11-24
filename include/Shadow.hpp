@@ -1,11 +1,9 @@
 #pragma once
 
-#include "Entity.hpp"
+#include <vector>
+
+#include "ShadowEdge.hpp"
 
 namespace dvmpredictor {
-	// TODO make a proper class
-	class Shadow : public Entity
-	{
-		using Entity::Entity;
-	};
+	using Shadow = std::vector<ShadowEdge>;
 }
