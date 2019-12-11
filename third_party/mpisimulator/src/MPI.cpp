@@ -1,5 +1,4 @@
-#include <cassert>
-#include <stack>
+#include "expect.hpp"
 
 #include "MPI.hpp"
 #include "MPIImpl.hpp"
@@ -48,43 +47,36 @@ namespace mpisimulator {
 
 	void MPI::send(uint32_t at, uint32_t to, uint64_t bytes)
 	{
-		assert(impl != nullptr);
+		expect(impl != nullptr);
 
 		impl->send(at, to, bytes);
 	}
 
 	void MPI::recv(uint32_t at, uint32_t from, uint64_t bytes)
 	{
-		assert(impl != nullptr);
+		expect(impl != nullptr);
 
 		impl->recv(at, from, bytes);
 	}
 
 	void MPI::skip(uint32_t at, double time)
 	{
-		assert(impl != nullptr);
+		expect(impl != nullptr);
 
 		impl->skip(at, time);
 	}
 
 	double MPI::wtime(uint32_t at)
 	{
-		assert(impl != nullptr);
+		expect(impl != nullptr);
 
 		return impl->wtime(at);
 	}
 
-	void MPI::compact()
+	void MPI::barrier(uint32_t at)
 	{
-		assert(impl != nullptr);
+		expect(impl != nullptr);
 
-		impl->compact();
-	}
-
-	void MPI::barrier()
-	{
-		assert(impl != nullptr);
-
-		impl->barrier();
+		impl->barrier(at);
 	}
 }

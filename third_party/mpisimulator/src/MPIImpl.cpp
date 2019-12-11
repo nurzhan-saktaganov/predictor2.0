@@ -1,9 +1,9 @@
-#include <cassert>
-#include <stack>
-
+#include "expect.hpp"
 #include "MPIImpl.hpp"
 
 namespace mpisimulator {
+	static const uint64_t barrier_package_size = 1;
+
 	MPIImpl::MPIImpl() :
 		_size(0), _latency(0), _bandwidth(0)
 	{}
@@ -11,14 +11,14 @@ namespace mpisimulator {
 	MPIImpl::MPIImpl(uint32_t size, double latency, double bandwidth) :
 		_size(size), _latency(latency), _bandwidth(bandwidth), _nodes(size)
 	{
-		assert(size > 0);
-		assert(latency > 0);
-		assert(bandwidth > 0);
+		expect(size > 0);
+		expect(latency > 0);
+		expect(bandwidth > 0);
 	}
 
 	void MPIImpl::send(uint32_t at, uint32_t to, uint64_t bytes)
 	{
-		assert(at < _size);
+		expect(at < _size);
 
 		struct operation op = {};
 
@@ -28,12 +28,14 @@ namespace mpisimulator {
 		op.send.bytes = bytes;
 
 		OperationQueue &ops = _nodes[at].ops;
-		ops.push(op);
+		ops.push_back(op);
+
+		_execute(at);
 	}
 
 	void MPIImpl::recv(uint32_t at, uint32_t from, uint64_t bytes)
 	{
-		assert(at < _size);
+		expect(at < _size);
 
 		struct operation op = {};
 
@@ -43,13 +45,15 @@ namespace mpisimulator {
 		op.recv.bytes = bytes;
 
 		OperationQueue &ops = _nodes[at].ops;
-		ops.push(op);
+		ops.push_back(op);
+
+		_execute(at);
 	}
 
 	void MPIImpl::skip(uint32_t at, double time)
 	{
-		assert(at < _size);
-		assert(time > 0);
+		expect(at < _size);
+		expect(time > 0);
 
 		struct operation op = {};
 
@@ -58,109 +62,153 @@ namespace mpisimulator {
 		op.skip.time = time;
 
 		OperationQueue &ops = _nodes[at].ops;
-		ops.push(op);
+		ops.push_back(op);
+
+		_execute(at);
 	}
 
 	double MPIImpl::wtime(uint32_t at)
 	{
-		assert(at < _size);
-
-		std::vector<bool> waiting(_size);
-		std::stack<struct operation> stack, stack_helper;
+		expect(at < _size);
 
 		OperationQueue &ops = _nodes[at].ops;
-		while (!ops.empty()) {
-			struct operation op = ops.front();
-			ops.pop();
-			stack_helper.push(op);
-		}
 
-		while (!stack_helper.empty()) {
-			stack.push(stack_helper.top());
-			stack_helper.pop();
-		}
-
-		while (!stack.empty()) {
-			struct operation op1 = stack.top();
-			uint32_t at = op1.at;
-
-			assert(op1.type != OperationType::undefined);
-
-			if (op1.type == OperationType::skip) {
-				stack.pop();
-				_nodes[at].local_time += op1.skip.time;
-				continue;
-			}
-
-			// To detect deadlocks
-			waiting[at] = true;
-
-			uint32_t with = (op1.type == OperationType::send) ? op1.send.to : op1.recv.from;
-
-			assert(with < _size);
-
-			// To detect deadlocks
-			assert(waiting[with] == false);
-
-			OperationQueue &ops = _nodes[with].ops;
-
-			// To detect an incorrect usage
-			assert(!ops.empty());
-
-			struct operation op2 = ops.front();
-			ops.pop();
-
-			assert(op2.type != OperationType::undefined);
-
-			// match two operations
-			bool match;
-
-			if (op1.type == OperationType::send) {
-				match = op2.type == OperationType::recv &&
-						op1.at == op2.recv.from;
-			} else {
-				match = op2.type == OperationType::send &&
-						op1.at == op2.send.to;
-			}
-
-			if (!match) {
-				stack.push(op2);
-				continue;
-			}
-
-			uint64_t bytes;
-
-			if (op1.type == OperationType::send) {
-				assert(op1.send.bytes == op2.recv.bytes);
-				bytes = op1.send.bytes;
-			} else {
-				assert(op1.recv.bytes == op2.send.bytes);
-				bytes = op1.recv.bytes;
-			}
-
-			double now = std::max(_nodes[at].local_time, _nodes[with].local_time);
-
-			now += _latency + bytes / _bandwidth;
-
-			_nodes[at].local_time = now;
-			_nodes[with].local_time = now;
-
-			waiting[at] = false;
-
-			stack.pop();
-		}
+		expect(ops.empty());
 
 		return _nodes[at].local_time;
 	}
 
-	void MPIImpl::compact()
+	void MPIImpl::_execute(uint32_t at)
 	{
-		for (uint32_t node = 0; node < _size; node++)
-			wtime(node);
+		while (true) {
+			struct node &node = _nodes[at];
+
+			if (node.waiting || node.ops.empty())
+				return;
+
+			OperationQueue &stack = node.ops;
+			struct operation op = stack.front();
+
+			must(op.at == at);
+
+			switch (op.type) {
+			case OperationType::skip: {
+				node.local_time += op.skip.time;
+				break;
+			}
+			case OperationType::send:
+				// fallthrough
+			case OperationType::recv: {
+				uint32_t partner_id;
+
+				if (op.type == OperationType::send)
+					partner_id = op.send.to;
+				else
+					partner_id = op.recv.from;
+
+				must(partner_id < _size);
+
+				struct node &partner = _nodes[partner_id];
+				OperationQueue &ops = partner.ops;
+
+				if (ops.empty()) {
+					node.waiting = true;
+					return;
+				}
+
+				struct operation op2 = ops.front();
+
+				must(op2.at == partner_id);
+
+				bool match;
+
+				if (op.type == OperationType::send) {
+					match = op2.type == OperationType::recv &&
+							op2.recv.from == op.at;
+				} else {
+					match = op2.type == OperationType::send &&
+							op2.send.to == op.at;
+				}
+
+				if (!match) {
+					node.waiting = true;
+					at = op2.at;
+					continue;
+				}
+
+				ops.pop_front();
+
+				uint64_t bytes;
+
+				if (op.type == OperationType::send) {
+					expect(op.send.bytes == op2.recv.bytes);
+					bytes = op.send.bytes;
+				} else {
+					expect(op.recv.bytes == op2.send.bytes);
+					bytes = op.recv.bytes;
+				}
+
+				double now = std::max(node.local_time, partner.local_time);
+
+				now += _latency + bytes / _bandwidth;
+
+				node.local_time = partner.local_time = now;
+
+				if (partner.waiting) {
+					partner.waiting = false;
+					at = op2.at;
+				}
+
+				break;
+			}
+			default:
+				abort();
+			}
+
+			stack.pop_front();
+		}
 	}
 
-	void MPIImpl::barrier()
+	void MPIImpl::barrier(uint32_t at)
 	{
-		// TODO not implemented yet
+		expect(at < _size);
+
+		// Note: This is a tree-based barrier is copied from
+		// https://github.com/nurzhan-saktaganov/cmc_master/blob/master/parallel_prac/2017autumn/task0/barrier.c
+
+		uint32_t divider = 1;
+
+		// Phase 1. Gather from all into process with rank = 0
+		while (divider < _size) {
+			divider *= 2;
+
+			bool i_am_sender = at % divider != 0;
+
+			if (i_am_sender) {
+				uint32_t send_to = at - divider / 2;
+				send(at, send_to, barrier_package_size);
+				break;
+			}
+
+			uint32_t receive_from = at + divider / 2;
+			if (receive_from < _size)
+				recv(at, receive_from, barrier_package_size);
+		}
+
+		// Phase 2. Propogate back
+		while (divider > 1) {
+			bool i_am_receiver = at % divider != 0;
+
+			if (i_am_receiver) {
+				uint32_t receive_from = at - divider / 2;
+				recv(at, receive_from, barrier_package_size);
+			} else {
+				uint32_t send_to = at + divider / 2;
+				if (send_to < _size)
+					send(at, send_to, barrier_package_size);
+			}
+
+			divider /= 2;
+		}
 	}
 }

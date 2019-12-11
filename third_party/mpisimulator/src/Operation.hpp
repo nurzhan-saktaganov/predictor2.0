@@ -9,6 +9,7 @@ namespace mpisimulator {
 		send,
 		recv,
 		skip,
+		barrier,
 		last,
 	};
 

@@ -1,9 +1,9 @@
 #pragma once
 
-#include <queue>
+#include <deque>
 
 #include "Operation.hpp"
 
 namespace mpisimulator {
-	using OperationQueue = std::queue<struct operation>;
+	using OperationQueue = std::deque<struct operation>;
 }

@@ -17,10 +17,9 @@ namespace mpisimulator {
 		void recv(uint32_t at, uint32_t from, uint64_t bytes);
 
 		void skip(uint32_t at, double time);
-		void barrier();
+		void barrier(uint32_t at);
 		double wtime(uint32_t at);
 
-		void compact();
 	private:
 		MPIImpl *impl;
 	};
