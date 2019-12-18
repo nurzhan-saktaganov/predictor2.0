@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdlib>
+
 #include "ExceptionImpl.hpp"
 
 #define STRINGIFY(x) #x

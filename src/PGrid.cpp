@@ -25,7 +25,7 @@ namespace dvmpredictor {
 		expect(_next_template_id != Template::id_undef);
 
 		auto t = Template(_next_template_id++);
-		_meta.of_template(t, shape);
+		_meta.save(t, shape);
 
 		return t;
 	}
@@ -36,7 +36,7 @@ namespace dvmpredictor {
 		expect(_next_darray_id != DArray::id_undef);
 
 		auto a = DArray(_next_darray_id++);
-		_meta.of_darray(a, shape, shadow, elem_size);
+		_meta.save(a, shape, shadow, elem_size);
 
 		return a;
 	}
