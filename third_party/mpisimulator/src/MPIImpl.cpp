@@ -2,8 +2,6 @@
 #include "MPIImpl.hpp"
 
 namespace mpisimulator {
-	static const uint64_t barrier_package_size = 1;
-
 	MPIImpl::MPIImpl() :
 		_size(0), _latency(0), _bandwidth(0)
 	{}
@@ -27,9 +25,7 @@ namespace mpisimulator {
 		op.send.to = to;
 		op.send.bytes = bytes;
 
-		OperationQueue &ops = _nodes[at].ops;
-		ops.push_back(op);
-
+		_put(at, op);
 		_execute(at);
 	}
 
@@ -44,9 +40,7 @@ namespace mpisimulator {
 		op.recv.from = from;
 		op.recv.bytes = bytes;
 
-		OperationQueue &ops = _nodes[at].ops;
-		ops.push_back(op);
-
+		_put(at, op);
 		_execute(at);
 	}
 
@@ -61,9 +55,7 @@ namespace mpisimulator {
 		op.at = at;
 		op.skip.time = time;
 
-		OperationQueue &ops = _nodes[at].ops;
-		ops.push_back(op);
-
+		_put(at, op);
 		_execute(at);
 	}
 
@@ -169,8 +161,17 @@ namespace mpisimulator {
 		}
 	}
 
+	void MPIImpl::_put(uint32_t at, struct operation op)
+	{
+		expect(at < _size);
+
+		_nodes[at].ops.push_back(op);
+	}
+
 	void MPIImpl::barrier(uint32_t at)
 	{
+		const uint64_t barrier_package_size = 1;
+
 		expect(at < _size);
 
 		// Note: This is a tree-based barrier is copied from

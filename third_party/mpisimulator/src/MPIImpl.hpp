@@ -19,6 +19,7 @@ namespace mpisimulator {
 
 	private:
 		void _execute(uint32_t at);
+		void _put(uint32_t at, struct operation op);
 
 		uint32_t _size;
 		double _latency;
