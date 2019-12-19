@@ -34,15 +34,31 @@ namespace dvmpredictor {
 		expect(distributes());
 		expect(range.count() > 0);
 		expect(procs > 0);
+
+		Ranges ranges;
+
 		// BACKLOG: for non forward not implemented yet.
 		expect(range.forward());
 
-		expect(_format == BLOCK);
+		int32_t shift = range.start();
 		// We pass normalized range
-		auto ranges = _distribute_block(Range(0, range.count()), procs);
+		range = Range(0, range.count());
+
+		switch (_format) {
+		case BLOCK:
+			ranges = _distribute_block(Range(0, range.count()), procs);
+			break;
+		case MULT_BLOCK:
+			// fallthrough
+		case WGT_BLOCK:
+			// fallthrough
+		case GEN_BLOCK:
+			// fallthrough
+		default:
+			expect(false && "unsupported format");
+		}
 
 		// Restore initial shift
-		int32_t shift = range.start();
 		for (Range &range: ranges) {
 			range = Range(range.start() + shift, range.count());
 		}
