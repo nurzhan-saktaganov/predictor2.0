@@ -20,6 +20,8 @@ namespace dvmpredictor {
 		PGrid();
 		PGrid(Shape shape, double latency, double bandwidth);
 
+		// TODO add validate to all public interface
+
 		Template declare_template(Shape shape);
 		DArray declare_darray(Shape shape, Shadow shadow, uint32_t elem_size);
 
@@ -49,6 +51,7 @@ namespace dvmpredictor {
 		Dispositions _align(Shape sh, ARule rule) const;
 		void _redispose(Dispositions before, Dispositions after);
 
+		// PGrid shape
 		Shape _shape;
 
 		uint32_t _next_template_id;

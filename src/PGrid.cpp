@@ -2,6 +2,7 @@
 #include "MPI.hpp"
 #include "PGrid.hpp"
 #include "Util.hpp"
+#include "SubShapes.hpp"
 
 namespace dvmpredictor {
 	PGrid::PGrid() : PGrid(Shape(), 0, 0) {}
@@ -24,6 +25,8 @@ namespace dvmpredictor {
 		expect(_inited());
 		expect(_next_template_id != Template::id_undef);
 
+		// BACKLOG: add shape validation
+
 		auto t = Template(_next_template_id++);
 		_meta.save(t, shape);
 
@@ -35,6 +38,10 @@ namespace dvmpredictor {
 		expect(_inited());
 		expect(_next_darray_id != DArray::id_undef);
 
+		expect(elem_size > 0);
+
+		// BACKLOG: add shape, shadow validation
+
 		auto a = DArray(_next_darray_id++);
 		_meta.save(a, shape, shadow, elem_size);
 
@@ -44,6 +51,8 @@ namespace dvmpredictor {
 	void PGrid::distribute(Template t, DRule rule)
 	{
 		expect(_is_declared(t));
+		expect(!_is_distributed(t));
+
 		auto shape = _meta.shape(t);
 		auto dispositions = _distribute(shape, rule);
 		_distribution.dispose(t, dispositions);
@@ -52,6 +61,8 @@ namespace dvmpredictor {
 	void PGrid::distribute(DArray a, DRule rule)
 	{
 		expect(_is_declared(a));
+		expect(!_is_distributed(a));
+
 		auto shape = _meta.shape(a);
 		auto dispositions = _distribute(shape, rule);
 		_distribution.dispose(a, dispositions);
@@ -101,41 +112,41 @@ namespace dvmpredictor {
 		// TODO realign array on array
 	}
 
-	// private methods
 	Node PGrid::_node(Coord coord) const
 	{
-		must(_inited());
-		must(_shape.size() == coord.size());
+		expect(_inited());
+		expect(_shape.size() == coord.size());
 
 		// imagine `_shape' as a n-dimension rectangle,
-		// we just need enumerate vertexes in this rectangle.
-		uint32_t id = 0;
-		uint32_t order = 1;
-		for (int i = coord.size() - 1; i >= 0; i--) {
-			id += coord[i] * order;
-			order *= _shape[i].count();
+		// we just need enumerate vertexes of this rectangle.
+
+		uint32_t sum = 0;
+		uint32_t multiplier = 1;
+		for (uint32_t component = 0; component < coord.size(); component++) {
+			sum += coord[component] * multiplier;
+			multiplier *= _shape[component].count();
 		}
 
-		auto n = Node(id);
-		must(n.defined());
-		return n;
+		Node node(sum);
+		must(node.defined());
+
+		return node;
 	}
 
 	// PGrid has a processor set with the given shape.
 	// In this processor set every node has it's own id.
-	Coord PGrid::_coord(Node n) const
+	Coord PGrid::_coord(Node node) const
 	{
-		must(_inited());
-		must(n.defined());
+		expect(_inited());
+		expect(node.defined());
 
-		Coord coord(_shape.size(), 0);
+		Coord coord(_shape.size());
 
-		uint32_t order = volume(_shape);
-		uint32_t id = n.id();
-		for (std::size_t i = 0; i < coord.size(); i++) {
-			order /= _shape[i].count();
-			coord[i] = id / order;
-			id = id - coord[i] * order;
+		uint32_t sum = node.id();
+		for (uint32_t component = 0; component < coord.size(); component++) {
+			uint32_t divider = _shape[component].count();
+			coord[component] = sum % divider;
+			sum /= divider;
 		}
 
 		return coord;
@@ -170,18 +181,46 @@ namespace dvmpredictor {
 
 	Dispositions PGrid::_distribute(Shape sh, DRule rule) const
 	{
-		// TODO We need distribution format for each dimension of pgrid
-		must(_shape.size() == rule.size());
+		// We need distribution format for each dimensions of shape
+		expect(sh.size() == rule.size());
 
+		uint32_t nodes_cnt = volume(_shape);
+
+		SubShapes sub_shapes(nodes_cnt);
+
+		uint32_t distribute_on_dim = 0;
 		for (uint32_t dim = 0; dim < rule.size(); dim++) {
-			auto dformat = rule[dim];
+			DFormat dformat = rule[dim];
+			Range range = sh[dim];
 
-			// TODO _distribute
-			(void)dformat;
+			expect(distribute_on_dim < _shape.size());
+			uint32_t procs = _shape[distribute_on_dim].count();
+			Ranges ranges = dformat.distribute(range, procs);
+
+			for (uint32_t node_id = 0; node_id < nodes_cnt; node_id++) {
+				Node node(node_id);
+				Coord coord = _coord(node);
+
+				expect(coord[distribute_on_dim] < _shape[distribute_on_dim].count());
+
+				int32_t at = coord[distribute_on_dim];
+
+				Range range = ranges[at];
+
+				sub_shapes[node_id].push_back(range);
+			}
+
+			if (dformat.distributes())
+				distribute_on_dim++;
 		}
 
-		Dispositions d;
-		return d;
+		Dispositions dispositions;
+
+		for (uint32_t node_id = 0; node_id < nodes_cnt; node_id++) {
+			dispositions[node_id] = Disposition(Node(node_id), sub_shapes[node_id]);
+		}
+
+		return dispositions;
 	}
 
 	Dispositions PGrid::_align(Shape sh, ARule rule) const

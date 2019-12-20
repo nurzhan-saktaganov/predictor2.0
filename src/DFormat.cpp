@@ -31,7 +31,6 @@ namespace dvmpredictor {
 
 	Ranges DFormat::distribute(Range range, uint32_t procs) const
 	{
-		expect(distributes());
 		expect(range.count() > 0);
 		expect(procs > 0);
 
@@ -45,8 +44,11 @@ namespace dvmpredictor {
 		range = Range(0, range.count());
 
 		switch (_format) {
+		case NONE:
+			ranges = _distribute_none(range, procs);
+			break;
 		case BLOCK:
-			ranges = _distribute_block(Range(0, range.count()), procs);
+			ranges = _distribute_block(range, procs);
 			break;
 		case MULT_BLOCK:
 			// fallthrough
@@ -61,6 +63,17 @@ namespace dvmpredictor {
 		// Restore initial shift
 		for (Range &range: ranges) {
 			range = Range(range.start() + shift, range.count());
+		}
+
+		return ranges;
+	}
+
+	Ranges DFormat::_distribute_none(Range range, uint32_t procs) const
+	{
+		Ranges ranges(procs);
+
+		for (Range &r: ranges) {
+			r = range;
 		}
 
 		return ranges;

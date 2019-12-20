@@ -17,6 +17,7 @@ namespace dvmpredictor {
 		Ranges distribute(Range range, uint32_t procs) const;
 
 	private:
+		Ranges _distribute_none(Range range, uint32_t procs) const;
 		Ranges _distribute_block(Range range, uint32_t procs) const;
 
 		enum Format { UNDEF, NONE, BLOCK, MULT_BLOCK, WGT_BLOCK, GEN_BLOCK };
