@@ -8,18 +8,6 @@
 #include "Shadow.hpp"
 
 namespace dvmpredictor {
-	struct template_meta {
-		Shape shape;
-		Template templ;
-	};
-
-	struct darray_meta {
-		Shape shape;
-		Shadow shadow;
-		uint32_t elem_size;
-		DArray darray;
-	};
-
 	class Meta {
 	public:
 		Meta();
@@ -31,8 +19,29 @@ namespace dvmpredictor {
 		Shape shape(DArray a) const;
 		Shadow shadow(DArray a) const;
 		uint32_t elem_size(DArray a) const;
-
 	private:
+		struct aligner {
+			int type;
+			union {
+				DArray darray;
+				Template templ;
+			};
+		};
+
+		struct template_meta {
+			Shape shape;
+			Template templ;
+			struct aligner aligner;
+		};
+
+		struct darray_meta {
+			Shape shape;
+			Shadow shadow;
+			uint32_t elem_size;
+			DArray darray;
+			struct aligner aligner;
+		};
+
 		bool _saved(DArray a) const;
 		bool _saved(Template t) const;
 

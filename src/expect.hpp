@@ -8,11 +8,9 @@
 #define TOSTRING(x)    STRINGIFY(x)
 
 
-#define expect(expr_)                                   \
+#define _expect(expr_)                                  \
     do {                                                \
-        bool b = (expr_);                               \
-                                                        \
-        if (b) break;                                   \
+        if (expr_) break;                               \
                                                         \
         throw new dvmpredictor::MisusageImpl(           \
             __FILE__ ":" TOSTRING(__LINE__) ": " #expr_ \
@@ -20,10 +18,13 @@
                                                         \
     } while (false);
 
-#define must(expr_)         \
+#define _must(expr_)        \
     do {                    \
-        bool b = (expr_);   \
+        if (expr_) break;   \
                             \
-        if (!b) abort();    \
+        abort();            \
                             \
     } while (false);
+
+#define expect(x_)	_must(x_)
+#define must(x_)	_must(x_)

@@ -38,7 +38,9 @@ namespace dvmpredictor {
 		expect(t.defined());
 		expect(_saved(t));
 
-		return _template[t.id()].shape;
+		auto at = t.id();
+
+		return _template[at].shape;
 	}
 
 	Shape Meta::shape(DArray a) const
@@ -46,7 +48,9 @@ namespace dvmpredictor {
 		expect(a.defined());
 		expect(_saved(a));
 
-		return _darray[a.id()].shape;
+		auto at = a.id();
+
+		return _darray[at].shape;
 	}
 
 	Shadow Meta::shadow(DArray a) const
@@ -54,7 +58,9 @@ namespace dvmpredictor {
 		expect(a.defined());
 		expect(_saved(a));
 
-		return _darray[a.id()].shadow;
+		auto at = a.id();
+
+		return _darray[at].shadow;
 	}
 
 	uint32_t Meta::elem_size(DArray a) const
@@ -62,26 +68,32 @@ namespace dvmpredictor {
 		expect(a.defined());
 		expect(_saved(a));
 
-		return _darray[a.id()].elem_size;
+		auto at = a.id();
+
+		return _darray[at].elem_size;
 	}
 
 	bool Meta::_saved(DArray a) const
 	{
 		expect(a.defined());
 
-		if (a.id() >= _darray.size())
+		auto at = a.id();
+
+		if (at >= _darray.size())
 			return false;
 
-		return _darray[a.id()].darray.defined();
+		return _darray[at].darray.defined();
 	}
 
 	bool Meta::_saved(Template t) const
 	{
 		expect(t.defined());
 
-		if (t.id() >= _template.size())
+		auto at = t.id();
+
+		if (at >= _template.size())
 			return false;
 
-		return _template[t.id()].templ.defined();
+		return _template[at].templ.defined();
 	}
 }

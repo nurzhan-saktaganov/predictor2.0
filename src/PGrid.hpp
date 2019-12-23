@@ -31,24 +31,40 @@ namespace dvmpredictor {
 		void redistribute(Template t, DRule rule);
 		void redistribute(DArray a, DRule rule);
 
-		void align_on(DArray a, Template t, ARule rule);
-		void align_on(DArray a, DArray b, ARule rule);
+		void align_with(DArray a, Template t, ARule rule);
+		void align_with(DArray a, DArray b, ARule rule);
 
-		void realign_on(DArray a, Template t, ARule rule);
-		void realign_on(DArray a, DArray b, ARule rule);
+		void realign_with(DArray a, Template t, ARule rule);
+		void realign_with(DArray a, DArray b, ARule rule);
 
 	private:
-		Node _node(Coord coord) const;
-		Coord _coord(Node n) const;
+		Dispositions _templates_disposition;
+		Dispositions _darrays_disposition;
 
+/*
+		struct align_info {
+			struct {
+				DArray a;
+				Template t;
+			} aligned;
+
+			struct {
+				DArray a;
+				Template t;
+			} aligner;
+		};
+*/
+		// private methods
 		bool _inited() const;
 		bool _is_declared(Template t) const;
 		bool _is_declared(DArray a) const;
 		bool _is_distributed(Template t) const;
 		bool _is_distributed(DArray a) const;
+		bool _is_aligned(Template t) const;
+		bool _is_aligned(DArray a) const;
 
-		Dispositions _distribute(Shape sh, DRule rule) const;
-		Dispositions _align(Shape sh, ARule rule) const;
+		void _distribute(const Shape &shape, DRule drule, Disposition &disposition) const;
+		Dispositions _align(Shape sh, Dispositions with, ARule rule) const;
 		void _redispose(Dispositions before, Dispositions after);
 
 		// PGrid shape

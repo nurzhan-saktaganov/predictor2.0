@@ -24,4 +24,29 @@ namespace dvmpredictor {
 		ensure(v, at + 1);
 		v[at] = d;
 	}
+
+	Dispositions Distribution::dispositions_of(Template t) const
+	{
+		expect(t.defined());
+
+		return _dispositions(_templates_dispositions, t.id());
+	}
+
+	Dispositions Distribution::dispositions_of(DArray a) const
+	{
+		expect(a.defined());
+
+		return _dispositions(_darray_dispositions, a.id());
+	}
+
+	Dispositions Distribution::_dispositions(const std::vector<Dispositions> &v, uint32_t at) const
+	{
+		expect(at < v.size());
+
+		Dispositions d = v[at];
+
+		expect(d.size() > 0);
+
+		return d;
+	}
 }

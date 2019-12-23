@@ -25,11 +25,11 @@ namespace dvmpredictor {
 		void redistribute(Template t, DRule rule);
 		void redistribute(DArray a, DRule rule);
 
-		void align_on(DArray a, Template t, ARule rule);
-		void align_on(DArray a, DArray b, ARule rule);
+		void align_with(DArray a, Template t, ARule rule);
+		void align_with(DArray a, DArray b, ARule rule);
 
-		void realign_on(DArray a, Template t, ARule rule);
-		void realign_on(DArray a, DArray b, ARule rule);
+		void realign_with(DArray a, Template t, ARule rule);
+		void realign_with(DArray a, DArray b, ARule rule);
 
 	private:
 		PGrid _pgrid;

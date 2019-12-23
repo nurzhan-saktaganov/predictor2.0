@@ -85,31 +85,31 @@ namespace dvmpredictor {
 		return impl->redistribute(a, rule);
 	}
 
-	void Predictor::align_on(DArray a, Template t, ARule rule)
+	void Predictor::align_with(DArray a, Template t, ARule rule)
 	{
 		expect(impl != nullptr);
 
-		return impl->align_on(a, t, rule);
+		return impl->align_with(a, t, rule);
 	}
 
-	void Predictor::align_on(DArray a, DArray b, ARule rule)
+	void Predictor::align_with(DArray a, DArray b, ARule rule)
 	{
 		expect(impl != nullptr);
 
-		return impl->align_on(a, b, rule);
+		return impl->align_with(a, b, rule);
 	}
 
-	void Predictor::realign_on(DArray a, Template t, ARule rule)
+	void Predictor::realign_with(DArray a, Template t, ARule rule)
 	{
 		expect(impl != nullptr);
 
-		return impl->realign_on(a, t, rule);
+		return impl->realign_with(a, t, rule);
 	}
 
-	void Predictor::realign_on(DArray a, DArray b, ARule rule)
+	void Predictor::realign_with(DArray a, DArray b, ARule rule)
 	{
 		expect(impl != nullptr);
 
-		return impl->realign_on(a, b, rule);
+		return impl->realign_with(a, b, rule);
 	}
 }

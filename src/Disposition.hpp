@@ -4,16 +4,7 @@
 #include "SubShape.hpp"
 
 namespace dvmpredictor {
-	class Disposition {
-	public:
-		Disposition();
-		Disposition(Node n, SubShape sh);
-
-		Node node() const;
-		SubShape sub_shape() const;
-
-	private:
-		Node _node;
-		SubShape _sub_shape;
-	};
+	// Массив размещений шаблона или массива по узлам.
+	// Индекс массива -- это идентификатор узла.
+	using Disposition = std::vector<Shape>;
 }

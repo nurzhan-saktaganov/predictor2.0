@@ -37,23 +37,23 @@ namespace dvmpredictor {
 		return _pgrid.redistribute(a, rule);
 	}
 
-	void PredictorImpl::align_on(DArray a, Template t, ARule rule)
+	void PredictorImpl::align_with(DArray a, Template t, ARule rule)
 	{
-		return _pgrid.align_on(a, t, rule);
+		return _pgrid.align_with(a, t, rule);
 	}
 
-	void PredictorImpl::align_on(DArray a, DArray b, ARule rule)
+	void PredictorImpl::align_with(DArray a, DArray b, ARule rule)
 	{
-		return _pgrid.align_on(a, b, rule);
+		return _pgrid.align_with(a, b, rule);
 	}
 
-	void PredictorImpl::realign_on(DArray a, Template t, ARule rule)
+	void PredictorImpl::realign_with(DArray a, Template t, ARule rule)
 	{
-		return _pgrid.realign_on(a, t, rule);
+		return _pgrid.realign_with(a, t, rule);
 	}
 
-	void PredictorImpl::realign_on(DArray a, DArray b, ARule rule)
+	void PredictorImpl::realign_with(DArray a, DArray b, ARule rule)
 	{
-		return _pgrid.realign_on(a, b, rule);
+		return _pgrid.realign_with(a, b, rule);
 	}
 }

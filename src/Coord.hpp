@@ -4,5 +4,5 @@
 #include <vector>
 
 namespace dvmpredictor {
-	using Coord = std::vector<int32_t>;
+	using Coord = std::vector<uint32_t>;
 }
