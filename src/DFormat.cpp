@@ -39,7 +39,7 @@ namespace dvmpredictor {
 		// BACKLOG: for non forward not implemented yet.
 		expect(range.forward());
 
-		int32_t shift = range.start();
+		int64_t shift = range.start();
 		// We pass normalized range
 		range = Range(0, range.count());
 
@@ -84,7 +84,7 @@ namespace dvmpredictor {
 		Ranges ranges(procs);
 
 		if (range.count() < procs) {
-			for (uint32_t i = 0; i < range.count(); ++i) {
+			for (uint64_t i = 0; i < range.count(); ++i) {
 				ranges[i] = Range(i, 1);
 			}
 
@@ -92,8 +92,8 @@ namespace dvmpredictor {
 		}
 
 		for (uint32_t i = 0; i < procs; ++i) {
-			int32_t start = i * range.count() / procs;
-			uint32_t count = (i + 1) * range.count() / procs - start;
+			int64_t start = i * range.count() / procs;
+			uint64_t count = (i + 1) * range.count() / procs - start;
 
 			ranges[i] = Range(start, count);
 		}

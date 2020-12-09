@@ -63,9 +63,12 @@ namespace dvmpredictor {
 		bool _is_aligned(Template t) const;
 		bool _is_aligned(DArray a) const;
 
-		void _distribute(const Shape &shape, DRule drule, Disposition &disposition) const;
-		Dispositions _align(Shape sh, Dispositions with, ARule rule) const;
-		void _redispose(Dispositions before, Dispositions after);
+		// procs count of the pgrid
+		uint64_t _rank() const;
+
+		void _distribute(const Shape &shape, const DRule &drule, Disposition &disposition) const;
+		void _align(const Shape &shape, const Disposition &with, const ARule &rule, Disposition &disposition) const;
+		//void _redispose(Dispositions before, Dispositions after);
 
 		// PGrid shape
 		Shape _shape;

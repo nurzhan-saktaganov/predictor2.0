@@ -3,16 +3,16 @@
 namespace dvmpredictor {
 	Range::Range() : Range(0, 0) {};
 
-	Range::Range(int32_t start, uint32_t count, bool forward) :
+	Range::Range(int64_t start, uint64_t count, bool forward) :
 		_start(start), _count(count), _forward(forward)
 	{}
 
-	int32_t Range::start() const
+	int64_t Range::start() const
 	{
 		return _start;
 	}
 
-	uint32_t Range::count() const
+	uint64_t Range::count() const
 	{
 		return _count;
 	}

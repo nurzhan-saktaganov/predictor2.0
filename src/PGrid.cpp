@@ -18,7 +18,7 @@ namespace dvmpredictor {
 			expect(r.forward() == true);
 		}
 
-		_mpi = mpisimulator::MPI(volume(shape), latency, bandwidth);
+		_mpi = mpisimulator::MPI(_rank(), latency, bandwidth);
 	}
 
 	Template PGrid::declare_template(Shape shape)
@@ -53,10 +53,10 @@ namespace dvmpredictor {
 		expect(_is_declared(t));
 		expect(!_is_distributed(t));
 
-		auto shape = _meta.shape(t);
-
 		uint32_t at = t.id();
 		ensure(_templates_disposition, at + 1);
+
+		auto shape = _meta.shape(t);
 
 		_distribute(shape, rule, _templates_disposition[at]);
 	}
@@ -95,39 +95,39 @@ namespace dvmpredictor {
 	// TODO
 	void PGrid::align_with(DArray a, Template t, ARule rule)
 	{
-		/*
 		expect(_is_declared(a));
-		expect(!_is_aligned(a));
-		expect(!_is_distributed(a));
+		expect(!_is_aligned(a) && !_is_distributed(a));
 
 		expect(_is_declared(t));
-		expect(_is_distributed(t));
+		expect(_is_distributed(t) || _is_aligned(t));
 
-		Shape shape = _meta.shape(a);
-		Dispositions with = _distribution.dispositions_of(t);
-		Dispositions dispositions = _align(shape, with, rule);
+		uint32_t at = a.id();
+		ensure(_darrays_disposition, at + 1);
 
-		_distribution.dispose(a, dispositions);
-		*/
+		auto shape = _meta.shape(a);
+
+		const Disposition &with = _templates_disposition[t.id()];
+
+		_align(shape, with, rule, _darrays_disposition[at]);
 	}
 
 	// TODO
 	void PGrid::align_with(DArray a, DArray b, ARule rule)
 	{
-		/*
 		expect(_is_declared(a));
-		expect(!_is_aligned(a));
-		expect(!_is_distributed(a));
+		expect(!_is_aligned(a) && !_is_distributed(a));
 
 		expect(_is_declared(b));
-		expect(_is_distributed(b));
+		expect(_is_distributed(b) || _is_aligned(b));
 
-		Shape shape = _meta.shape(a);
-		Dispositions with = _distribution.dispositions_of(b);
-		Dispositions dispositions = _align(shape, with, rule);
+		uint32_t at = a.id();
+		ensure(_darrays_disposition, at + 1);
 
-		_distribution.dispose(a, dispositions);
-		*/
+		auto shape = _meta.shape(a);
+
+		const Disposition &with = _darrays_disposition[b.id()];
+
+		_align(shape, with, rule, _darrays_disposition[at]);
 	}
 
 	// TODO
@@ -144,7 +144,7 @@ namespace dvmpredictor {
 
 	bool PGrid::_inited() const
 	{
-		return _shape.size() > 0;
+		return _rank() > 0;
 	}
 
 	bool PGrid::_is_declared(Template t) const
@@ -181,7 +181,12 @@ namespace dvmpredictor {
 		return false;
 	}
 
-	void PGrid::_distribute(const Shape &shape, DRule drule, Disposition &disposition) const
+	uint64_t PGrid::_rank() const
+	{
+		return volume(_shape);
+	}
+
+	void PGrid::_distribute(const Shape &shape, const DRule &drule, Disposition &disposition) const
 	{
 		/* Идея такая. Для каждого распределяемого измерения массива строим разбиение
 		на соответствующие куски согласно размерам измерения процессорной решетки, по которому оно распределяется.
@@ -222,8 +227,8 @@ namespace dvmpredictor {
 			pgrid_axis++;
 		}
 
-		disposition.resize(_shape.size());
-		for (uint32_t node_id = 0; node_id < volume(_shape); node_id++) {
+		disposition.resize(_rank());
+		for (uint32_t node_id = 0; node_id < _rank(); node_id++) {
 			Shape local_shape(shape.size());	// форма локального куска
 			Coord coord(_shape.size());			// координата узла процессорной решетки
 
@@ -248,32 +253,72 @@ namespace dvmpredictor {
 		}
 	}
 
-	Dispositions PGrid::_align(Shape sh, Dispositions with, ARule rule) const
+	void PGrid::_align(const Shape &shape, const Disposition &with, const ARule &rule, Disposition &disposition) const
 	{
-		expect(sh.size() == rule.size());
+		expect(with.size() == _rank());
+		expect(rule.size() > 0);
 
-		uint32_t nodes_cnt = volume(_shape);
+		disposition.resize(_rank());
+		for (uint32_t node_id = 0; node_id < _rank(); node_id++) {
+			const Shape &local_template = with[node_id];
+			Shape local_shape(shape.size());
+			// std::vector<bool> seems to be zero initialized:
+			// https://stackoverflow.com/questions/22983707/stdvectorbool-guaranteed-to-default-all-entries-to-false
+			std::vector<bool> seen_axis(local_shape.size());
+			bool no_local = false;
 
-		expect(with.size() == nodes_cnt);
+			// validate rule and template simultaneously
+			expect(rule.size() == local_template.size());
 
-		SubShapes sub_shapes(nodes_cnt);
+			for (uint32_t template_axis = 0; template_axis < local_template.size(); template_axis++) {
+				const AFormat &aformat = rule[template_axis];
 
-		std::vector<bool> used(with.size(), false);
+				if (aformat.dimension() == aformat.dim_all)
+					// It is the case when we have empty braces in T, e.g.:
+					// #pragma dvm align A ([i] with T[i][])
+					continue;
 
-		for (uint32_t dimension = 0; dimension < rule.size(); dimension++) {
-			//AFormat aformat = rule[dimension];
+				int64_t template_left = local_template[template_axis].start();
+				int64_t template_right = template_left + local_template[template_axis].count() - 1;
 
-			// TODO
+				expect(template_left <= template_right);
+
+				if (aformat.a() == 0) {
+					expect(aformat.dimension() == aformat.dim_none);
+					// In this the case when we have constant in T, e.g.:
+					// #pragma dvm align A ([i] with T[i][2])
+					if (aformat.b() < template_left || template_right < aformat.b())
+						no_local = true;
+					continue;
+				}
+
+				uint32_t local_axis = aformat.dimension();
+
+				expect(seen_axis[local_axis] == false);
+				seen_axis[local_axis] = true;
+
+				// division with round up
+				int64_t local_left = (template_left + aformat.a() - 1 - aformat.b()) / aformat.a();
+				// division with round down
+				int64_t local_right = (template_right - aformat.b()) / aformat.a();
+
+				int64_t global_left = shape[local_axis].start();
+				int64_t global_right = global_left + shape[local_axis].count() - 1;
+
+				expect(global_left <= local_left && local_right <= global_right);
+
+				int64_t local_count = local_right - local_left + 1;
+
+				local_shape[local_axis] = Range(local_left, local_count);
+			}
+
+			for (uint32_t local_axis = 0; local_axis < local_shape.size(); local_axis++) {
+				if (no_local == false && seen_axis[local_axis] == false)
+					// In othercase it has been initialized alredy by default constructor
+					local_shape[local_axis] = shape[local_axis];
+			}
+
+			disposition[node_id] = local_shape;
 		}
-
-		// TODO _align shape on arule
-
-		Dispositions d;
-		return d;
-	}
-
-	void PGrid::_redispose(Dispositions before, Dispositions after)
-	{
-		// TODO _redispose
 	}
 }

@@ -2,6 +2,8 @@
 
 #include <vector>
 
+#include "expect.hpp"
+
 #include "Coord.hpp"
 #include "Shape.hpp"
 
@@ -14,9 +16,9 @@ namespace dvmpredictor {
 			v.resize(size);
 	}
 
-	static inline uint32_t volume(const Shape &sh)
+	static inline uint64_t volume(const Shape &sh)
 	{
-		uint32_t v = sh.size() > 0 ? 1 : 0;
+		uint64_t v = sh.size() > 0 ? 1 : 0;
 		for (auto &r: sh) v *= r.count();
 		return v;
 	}

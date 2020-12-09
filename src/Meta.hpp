@@ -20,6 +20,7 @@ namespace dvmpredictor {
 		Shadow shadow(DArray a) const;
 		uint32_t elem_size(DArray a) const;
 	private:
+		/*
 		struct aligner {
 			int type;
 			union {
@@ -27,11 +28,12 @@ namespace dvmpredictor {
 				Template templ;
 			};
 		};
+		*/
 
 		struct template_meta {
 			Shape shape;
 			Template templ;
-			struct aligner aligner;
+		//	struct aligner aligner;
 		};
 
 		struct darray_meta {
@@ -39,7 +41,7 @@ namespace dvmpredictor {
 			Shadow shadow;
 			uint32_t elem_size;
 			DArray darray;
-			struct aligner aligner;
+		//	struct aligner aligner;
 		};
 
 		bool _saved(DArray a) const;
