@@ -272,7 +272,7 @@ namespace dvmpredictor {
 			for (uint32_t template_axis = 0; template_axis < local_template.size(); template_axis++) {
 				const AFormat &aformat = rule[template_axis];
 
-				if (aformat.dimension() == aformat.dim_all)
+				if (aformat.is_asterisk())
 					// It is the case when we have empty braces in T, e.g.:
 					// #pragma dvm align A ([i] with T[i][])
 					continue;
@@ -282,8 +282,7 @@ namespace dvmpredictor {
 
 				expect(template_left <= template_right);
 
-				if (aformat.a() == 0) {
-					expect(aformat.dimension() == aformat.dim_none);
+				if (aformat.is_constant()) {
 					// In this the case when we have constant in T, e.g.:
 					// #pragma dvm align A ([i] with T[i][2])
 					if (aformat.b() < template_left || template_right < aformat.b())
