@@ -312,9 +312,10 @@ namespace dvmpredictor {
 				local_shape[local_axis] = Range(local_left, local_count);
 			}
 
-			for (uint32_t local_axis = 0; local_axis < local_shape.size(); local_axis++) {
-				if (no_local == false && seen_axis[local_axis] == false)
-					// In othercase it has been initialized alredy by default constructor
+			if (no_local == true)
+				;// do nothing, local_shape has already been initialized by the default constructor
+			else for (uint32_t local_axis = 0; local_axis < local_shape.size(); local_axis++) {
+				if (seen_axis[local_axis] == false)
 					local_shape[local_axis] = shape[local_axis];
 			}
 
