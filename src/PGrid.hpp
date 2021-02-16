@@ -9,10 +9,10 @@
 #include "ARule.hpp"
 #include "Coord.hpp"
 #include "Node.hpp"
-#include "Distribution.hpp"
 #include "Meta.hpp"
 #include "Shadow.hpp"
-#include "AlignTree.hpp"
+#include "Disposition.hpp"
+#include "Dispositions.hpp"
 
 namespace dvmpredictor {
 	class PGrid {
@@ -76,10 +76,8 @@ namespace dvmpredictor {
 		uint32_t _next_template_id;
 		uint32_t _next_darray_id;
 
-		Distribution _distribution;
 		// Meta information about darrays and templates
 		Meta _meta;
-		AlignTree _align_tree;
 
 		mpisimulator::MPI _mpi;
 	};

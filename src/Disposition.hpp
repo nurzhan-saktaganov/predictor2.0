@@ -1,7 +1,6 @@
 #pragma once
 
-#include "Node.hpp"
-#include "SubShape.hpp"
+#include "Shape.hpp"
 
 namespace dvmpredictor {
 	// Массив размещений шаблона или массива по узлам.

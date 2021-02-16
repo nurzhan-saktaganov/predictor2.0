@@ -2,7 +2,6 @@
 #include "MPI.hpp"
 #include "PGrid.hpp"
 #include "Util.hpp"
-#include "SubShapes.hpp"
 
 namespace dvmpredictor {
 	PGrid::PGrid() : PGrid(Shape(), 0, 0) {}
