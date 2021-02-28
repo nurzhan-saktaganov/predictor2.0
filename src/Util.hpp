@@ -64,4 +64,53 @@ namespace dvmpredictor {
 			id /= divider;
 		}
 	}
+
+	// The manhattan distance
+	static inline uint32_t coord_distance(const Coord &a, const Coord &b)
+	{
+		uint32_t distance = 0;
+
+		expect(a.size() > 0);
+		expect(a.size() == b.size());
+
+		for (uint32_t i = 0; i < a.size(); i++) {
+			// because they are uint32_t
+			if (a[i] > b[i])
+				distance += a[i] - b[i];
+			else
+				distance += b[i] - a[i];
+		}
+
+		return distance;
+	}
+
+	static void shape_intersect(const Shape &a, const Shape &b, Shape &out)
+	{
+		expect(out.size() > 0);
+		expect(out.size() == a.size());
+		expect(out.size() == b.size());
+
+		for (uint32_t i = 0; i < out.size(); i++) {
+			Range r1 = a[i];
+			Range r2 = b[i];
+
+			uint64_t start = std::max(r1.start(), r2.start());
+			uint64_t end = std::min(r1.start() + r1.count(), r2.start() + r2.count());
+			uint64_t count = 0;
+
+			if (end > start)
+				count = end - start;
+
+			out[i] = Range(start, count);
+		}
+	}
+
+	static inline bool shape_intersects(const Shape &a, const Shape &b)
+	{
+		Shape out;
+
+		shape_intersect(a, b, out);
+
+		return volume(out) > 0;
+	}
 }
