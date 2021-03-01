@@ -70,6 +70,10 @@ namespace dvmpredictor {
 		void _align(const Shape &shape, const Disposition &with, const ARule &rule, Disposition &disposition) const;
 		//void _redispose(Dispositions before, Dispositions after);
 
+		void _redistribute(const Disposition &before, const Disposition &after, uint32_t elem_size, mpisimulator::MPI &mpi) const;
+
+		uint32_t _distance(uint32_t node1, uint32_t node2) const;
+
 		// PGrid shape
 		Shape _shape;
 

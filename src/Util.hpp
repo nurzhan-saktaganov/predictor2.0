@@ -113,4 +113,25 @@ namespace dvmpredictor {
 
 		return volume(out) > 0;
 	}
+
+	static inline bool shape_equal(const Shape &a, const Shape &b)
+	{
+		expect(a.size() > 0);
+		expect(a.size() == b.size());
+
+		for (uint32_t i = 0; i < a.size(); i++) {
+			expect(a[i].count() > 0);
+
+			if (a[i].start() != b[i].start())
+				return false;
+
+			if (a[i].count() != b[i].count())
+				return false;
+
+			if (a[i].forward() != b[i].forward())
+				return false;
+		}
+
+		return true;
+	}
 }

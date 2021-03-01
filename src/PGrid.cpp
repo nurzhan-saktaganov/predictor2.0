@@ -185,7 +185,7 @@ namespace dvmpredictor {
 		return volume(_shape);
 	}
 
-	void PGrid::_distribute(const Shape &shape, const DRule &drule, Disposition &disposition) const
+	void PGrid::_distribute(const Shape &shape, const DRule &drule, Disposition &out) const
 	{
 		/* Идея такая. Для каждого распределяемого измерения массива строим разбиение
 		на соответствующие куски согласно размерам измерения процессорной решетки, по которому оно распределяется.
@@ -200,7 +200,7 @@ namespace dvmpredictor {
 		/*
 			shape - форма распределяемого шаблона или массива.
 			drule - правило распределения измерений.
-			disposition - результат в виде размещения.
+			out - результат в виде размещения.
 		*/
 
 		expect(shape.size() == drule.size());
@@ -226,7 +226,7 @@ namespace dvmpredictor {
 			pgrid_axis++;
 		}
 
-		disposition.resize(_rank());
+		out.resize(_rank());
 		for (uint32_t node_id = 0; node_id < _rank(); node_id++) {
 			Shape local_shape(shape.size());	// форма локального куска
 			Coord coord(_shape.size());			// координата узла процессорной решетки
@@ -248,16 +248,16 @@ namespace dvmpredictor {
 				pgrid_axis++;
 			}
 
-			disposition[node_id] = local_shape;
+			out[node_id] = local_shape;
 		}
 	}
 
-	void PGrid::_align(const Shape &shape, const Disposition &with, const ARule &rule, Disposition &disposition) const
+	void PGrid::_align(const Shape &shape, const Disposition &with, const ARule &rule, Disposition &out) const
 	{
 		expect(with.size() == _rank());
 		expect(rule.size() > 0);
 
-		disposition.resize(_rank());
+		out.resize(_rank());
 		for (uint32_t node_id = 0; node_id < _rank(); node_id++) {
 			const Shape &local_template = with[node_id];
 			Shape local_shape(shape.size());
@@ -317,7 +317,92 @@ namespace dvmpredictor {
 					local_shape[local_axis] = shape[local_axis];
 			}
 
-			disposition[node_id] = local_shape;
+			out[node_id] = local_shape;
+		}
+	}
+
+	uint32_t PGrid::_distance(uint32_t node1, uint32_t node2) const
+	{
+		Coord c1(_shape.size()), c2(_shape.size());
+
+		id2coord(_shape, node1, c1);
+		id2coord(_shape, node2, c2);
+
+		return coord_distance(c1, c2);
+	}
+
+	void PGrid::_redistribute(const Disposition &before, const Disposition &after, uint32_t elem_size, mpisimulator::MPI &mpi) const
+	{
+		// computes and executes send recv pairs to perfrom given redistribution
+		expect(before.size() > 0);
+		expect(before.size() == after.size());
+		expect(before.size() == _rank());
+
+		for (uint32_t receiver = 0; receiver < after.size(); receiver++) {
+			std::vector<uint32_t> senders;
+			const Shape &target = after[receiver];
+			uint64_t total_received = 0;
+
+			if (volume(target) == 0)
+				// nothing to receive
+				continue;
+
+			for (uint32_t node = 0; node < before.size(); node++) {
+				const Shape &local = before[node];
+				bool add = true;
+
+				if (volume(local) == 0)
+					// nothing to send
+					continue;
+
+				expect(target.size() == local.size());
+
+				if (shape_intersects(target, local) == false)
+					continue;
+
+				for (uint32_t i = 0; i < senders.size(); i++) {
+					uint32_t sender = senders[i];
+					const Shape &stored = before[sender];
+
+					if (shape_intersects(local, stored) == false)
+						continue;
+
+					// They are equal if they intersect
+					expect(shape_equal(local, stored));
+
+					// We replace this sender or ignore the current node
+					add = false;
+
+					if (_distance(receiver, node) < _distance(receiver, sender))
+						// replace sender
+						senders[i] = node;
+
+					break;
+				}
+
+				if (add == false)
+					continue;
+
+				senders.push_back(node);
+			}
+
+			for (uint32_t i = 0; i < senders.size(); i++) {
+				uint32_t sender = senders[i];
+				const Shape &local = before[sender];
+				Shape part(local.size());
+
+				shape_intersect(target, local, part);
+
+				uint32_t elem_cnt = volume(part);
+				total_received += elem_cnt;
+
+				uint64_t bytes = elem_cnt * elem_size;
+
+				mpi.send(sender, receiver, bytes);
+				mpi.recv(receiver, sender, bytes);
+			}
+
+			expect(volume(target) == total_received);
 		}
 	}
 }
