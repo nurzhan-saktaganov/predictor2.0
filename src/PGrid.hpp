@@ -38,22 +38,6 @@ namespace dvmpredictor {
 		void realign_with(DArray a, DArray b, ARule rule);
 
 	private:
-		Dispositions _templates_disposition;
-		Dispositions _darrays_disposition;
-
-/*
-		struct align_info {
-			struct {
-				DArray a;
-				Template t;
-			} aligned;
-
-			struct {
-				DArray a;
-				Template t;
-			} aligner;
-		};
-*/
 		// private methods
 		bool _inited() const;
 		bool _is_declared(Template t) const;
@@ -68,7 +52,6 @@ namespace dvmpredictor {
 
 		void _distribute(const Shape &shape, const DRule &drule, Disposition &disposition) const;
 		void _align(const Shape &shape, const Disposition &with, const ARule &rule, Disposition &disposition) const;
-		//void _redispose(Dispositions before, Dispositions after);
 
 		void _redistribute(const Disposition &before, const Disposition &after, uint32_t elem_size, mpisimulator::MPI &mpi) const;
 
@@ -81,7 +64,8 @@ namespace dvmpredictor {
 		uint32_t _next_darray_id;
 
 		// Meta information about darrays and templates
-		Meta _meta;
+		std::vector<Meta> _templates_meta;
+		std::vector<Meta> _darrays_meta;
 
 		mpisimulator::MPI _mpi;
 	};

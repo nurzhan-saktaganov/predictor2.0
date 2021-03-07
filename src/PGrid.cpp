@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include "expect.hpp"
 #include "MPI.hpp"
 #include "PGrid.hpp"
@@ -28,7 +30,11 @@ namespace dvmpredictor {
 		must(_next_template_id != Template::id_undef);
 
 		auto t = Template(_next_template_id++);
-		_meta.save(t, shape);
+		uint32_t at = t.id();
+
+		ensure(_templates_meta, at + 1);
+
+		_templates_meta[at] = Meta(t, shape);
 
 		return t;
 	}
@@ -41,10 +47,14 @@ namespace dvmpredictor {
 
 		must(_next_darray_id != DArray::id_undef);
 
-		auto a = DArray(_next_darray_id++);
-		_meta.save(a, shape, shadow, elem_size);
+		auto d = DArray(_next_darray_id++);
+		uint32_t at = d.id();
 
-		return a;
+		ensure(_darrays_meta, at + 1);
+
+		_darrays_meta[at] = Meta(d, shape, shadow, elem_size);
+
+		return d;
 	}
 
 	void PGrid::distribute(Template t, DRule rule)
@@ -53,11 +63,9 @@ namespace dvmpredictor {
 		expect(!_is_distributed(t));
 
 		uint32_t at = t.id();
-		ensure(_templates_disposition, at + 1);
+		Shape &shape = _templates_meta[at].shape;
 
-		auto shape = _meta.shape(t);
-
-		_distribute(shape, rule, _templates_disposition[at]);
+		_distribute(shape, rule, _templates_meta[at].disposition);
 	}
 
 	void PGrid::distribute(DArray a, DRule rule)
@@ -65,12 +73,10 @@ namespace dvmpredictor {
 		expect(_is_declared(a));
 		expect(!_is_distributed(a));
 
-		auto shape = _meta.shape(a);
-
 		uint32_t at = a.id();
-		ensure(_darrays_disposition, at + 1);
+		Shape &shape = _darrays_meta[at].shape;
 
-		_distribute(shape, rule, _darrays_disposition[at]);
+		_distribute(shape, rule, _darrays_meta[at].disposition);
 	}
 
 	// TODO
@@ -101,13 +107,11 @@ namespace dvmpredictor {
 		expect(_is_distributed(t) || _is_aligned(t));
 
 		uint32_t at = a.id();
-		ensure(_darrays_disposition, at + 1);
+		Shape &shape = _darrays_meta[at].shape;
 
-		auto shape = _meta.shape(a);
+		const Disposition &with = _templates_meta[t.id()].disposition;
 
-		const Disposition &with = _templates_disposition[t.id()];
-
-		_align(shape, with, rule, _darrays_disposition[at]);
+		_align(shape, with, rule, _darrays_meta[at].disposition);
 	}
 
 	// TODO
@@ -120,13 +124,11 @@ namespace dvmpredictor {
 		expect(_is_distributed(b) || _is_aligned(b));
 
 		uint32_t at = a.id();
-		ensure(_darrays_disposition, at + 1);
 
-		auto shape = _meta.shape(a);
+		Shape &shape = _darrays_meta[at].shape;
+		const Disposition &with = _darrays_meta[b.id()].disposition;
 
-		const Disposition &with = _darrays_disposition[b.id()];
-
-		_align(shape, with, rule, _darrays_disposition[at]);
+		_align(shape, with, rule, _darrays_meta[at].disposition);
 	}
 
 	// TODO
