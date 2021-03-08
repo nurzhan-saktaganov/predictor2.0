@@ -63,8 +63,10 @@ namespace dvmpredictor {
 		expect(!_is_distributed(t));
 
 		uint32_t at = t.id();
-		Shape &shape = _templates_meta[at].shape;
 
+		_templates_meta[at].type = Meta::DISTRIBUTABLE;
+
+		Shape &shape = _templates_meta[at].shape;
 		_distribute(shape, rule, _templates_meta[at].disposition);
 	}
 
@@ -74,56 +76,120 @@ namespace dvmpredictor {
 		expect(!_is_distributed(a));
 
 		uint32_t at = a.id();
-		Shape &shape = _darrays_meta[at].shape;
 
+		_templates_meta[at].type = Meta::DISTRIBUTABLE;
+
+		Shape &shape = _darrays_meta[at].shape;
 		_distribute(shape, rule, _darrays_meta[at].disposition);
 	}
 
-	// TODO
 	void PGrid::redistribute(Template t, DRule rule)
 	{
 		expect(_is_declared(t));
-		expect(_is_distributed(t));
+		expect(_is_distributable(t));
 
-		// TODO ask: can we redistribute template that aligned on something? Let's assume we can't.
-		// assert(!_align_graph.is_aligned(t));
+		// TODO here
 
-		// Perform nested distribution using Deepth-first search
+		// TODO nested things
 	}
 
-	// TODO
 	void PGrid::redistribute(DArray a, DRule rule)
 	{
-		// TODO redistribute darray
+		expect(_is_declared(a));
+		expect(_is_distributable(a));
+
+		// TODO here
+
+		// TODO nested things
 	}
 
-	// TODO
+	void PGrid::_root_aligner(Meta &meta, Template via, ARule rule) const
+	{
+		if (_is_alignable(via)) {
+			uint32_t at = via.id();
+
+			ARule rule2, out;
+
+			rule2 = _templates_meta[at].aligner.rule;
+
+			combine_arule(rule, rule2, out);
+
+			if (_templates_meta[at].aligner.is_template) {
+				Template root = _templates_meta[at].aligner.templ;
+
+				return _root_aligner(meta, root, out);
+			}
+
+			DArray root = _templates_meta[at].aligner.darray;
+
+			return _root_aligner(meta, root, out);
+		}
+
+		meta.aligner.is_template = true;
+		meta.aligner.templ = via;
+		meta.aligner.rule = rule;
+	}
+
+	void PGrid::_root_aligner(Meta &meta, DArray via, ARule rule) const
+	{
+		if (_is_alignable(via)) {
+			uint32_t at = via.id();
+
+			ARule rule2, out;
+
+			rule2 = _darrays_meta[at].aligner.rule;
+
+			combine_arule(rule, rule2, out);
+
+			if (_darrays_meta[at].aligner.is_template) {
+				Template root = _darrays_meta[at].aligner.templ;
+
+				return _root_aligner(meta, root, out);
+			}
+
+			DArray root = _darrays_meta[at].aligner.darray;
+
+			return _root_aligner(meta, root, out);
+		}
+
+		meta.aligner.is_template = false;
+		meta.aligner.darray = via;
+		meta.aligner.rule = rule;
+	}
+
 	void PGrid::align_with(DArray a, Template t, ARule rule)
 	{
 		expect(_is_declared(a));
-		expect(!_is_aligned(a) && !_is_distributed(a));
+		expect(!_is_distributed(a));
 
 		expect(_is_declared(t));
-		expect(_is_distributed(t) || _is_aligned(t));
+		expect(_is_distributed(t));
 
 		uint32_t at = a.id();
-		Shape &shape = _darrays_meta[at].shape;
 
+		_darrays_meta[at].type = Meta::ALIGNABLE;
+
+		_root_aligner(_darrays_meta[at], t, rule);
+
+		Shape &shape = _darrays_meta[at].shape;
 		const Disposition &with = _templates_meta[t.id()].disposition;
 
 		_align(shape, with, rule, _darrays_meta[at].disposition);
 	}
 
-	// TODO
 	void PGrid::align_with(DArray a, DArray b, ARule rule)
 	{
 		expect(_is_declared(a));
-		expect(!_is_aligned(a) && !_is_distributed(a));
+		expect(!_is_distributed(a));
 
 		expect(_is_declared(b));
-		expect(_is_distributed(b) || _is_aligned(b));
+		expect(_is_distributed(b));
 
 		uint32_t at = a.id();
+
+		_darrays_meta[at].type = Meta::ALIGNABLE;
+
+		_root_aligner(_darrays_meta[at], b, rule);
 
 		Shape &shape = _darrays_meta[at].shape;
 		const Disposition &with = _darrays_meta[b.id()].disposition;
@@ -131,16 +197,26 @@ namespace dvmpredictor {
 		_align(shape, with, rule, _darrays_meta[at].disposition);
 	}
 
-	// TODO
 	void PGrid::realign_with(DArray a, Template t, ARule rule)
 	{
-		// TODO realign array on template
+		expect(_is_declared(a));
+		expect(_is_alignable(a));
+
+		expect(_is_declared(t));
+		expect(_is_distributed(t));
+
+		// TODO here realign array on template
 	}
 
-	// TODO
 	void PGrid::realign_with(DArray a, DArray b, ARule rule)
 	{
-		// TODO realign array on array
+		expect(_is_declared(a));
+		expect(_is_alignable(a));
+
+		expect(_is_declared(b));
+		expect(_is_distributed(b));
+
+		// TODO here realign array on array
 	}
 
 	bool PGrid::_inited() const
@@ -160,26 +236,44 @@ namespace dvmpredictor {
 
 	bool PGrid::_is_distributed(Template t) const
 	{
-		// TODO _is_distributed for template
-		return false;
+		uint32_t at = t.id();
+
+		return _templates_meta[at].type != Meta::UNDEF;
 	}
 
 	bool PGrid::_is_distributed(DArray a) const
 	{
-		// TODO _is_distributed for DArray
-		return false;
+		uint32_t at = a.id();
+
+		return _darrays_meta[at].type != Meta::UNDEF;
 	}
 
-	bool PGrid::_is_aligned(Template t) const
+	bool PGrid::_is_distributable(Template t) const
 	{
-		// TODO
-		return false;
+		uint32_t at = t.id();
+
+		return _templates_meta[at].type == Meta::DISTRIBUTABLE;
 	}
 
-	bool PGrid::_is_aligned(DArray a) const
+	bool PGrid::_is_distributable(DArray a) const
 	{
-		// TODO
-		return false;
+		uint32_t at  = a.id();
+
+		return _templates_meta[at].type == Meta::DISTRIBUTABLE;
+	}
+
+	bool PGrid::_is_alignable(Template t) const
+	{
+		uint32_t at = t.id();
+
+		return _templates_meta[at].type == Meta::ALIGNABLE;
+	}
+
+	bool PGrid::_is_alignable(DArray a) const
+	{
+		uint32_t at = a.id();
+
+		return _darrays_meta[at].type == Meta::ALIGNABLE;
 	}
 
 	uint64_t PGrid::_rank() const

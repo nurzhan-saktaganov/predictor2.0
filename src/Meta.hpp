@@ -33,6 +33,7 @@ namespace dvmpredictor {
 		// anonymous unions.
 		// In the future using std::variant may be option too.
 
+		// The struct below is used when type is ALIGNABLE
 		struct {
 			bool is_template;
 		//	union {

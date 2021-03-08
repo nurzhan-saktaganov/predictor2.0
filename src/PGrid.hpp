@@ -44,8 +44,10 @@ namespace dvmpredictor {
 		bool _is_declared(DArray a) const;
 		bool _is_distributed(Template t) const;
 		bool _is_distributed(DArray a) const;
-		bool _is_aligned(Template t) const;
-		bool _is_aligned(DArray a) const;
+		bool _is_distributable(Template t) const;
+		bool _is_distributable(DArray a) const;
+		bool _is_alignable(Template t) const;
+		bool _is_alignable(DArray a) const;
 
 		// procs count of the pgrid
 		uint64_t _rank() const;
@@ -55,6 +57,8 @@ namespace dvmpredictor {
 
 		void _redistribute(const Disposition &before, const Disposition &after, uint32_t elem_size, mpisimulator::MPI &mpi) const;
 
+		void _root_aligner(Meta &meta, Template via, ARule rule) const;
+		void _root_aligner(Meta &meta, DArray via, ARule rule) const;
 		uint32_t _distance(uint32_t node1, uint32_t node2) const;
 
 		// PGrid shape
