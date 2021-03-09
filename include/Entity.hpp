@@ -10,6 +10,9 @@ namespace dvmpredictor {
 		uint32_t id() const;
 		bool defined() const;
 
+		bool operator==(const Entity &with) const;
+		bool operator!=(const Entity &with) const;
+
 		static const uint32_t id_undef = UINT32_MAX;
 
 	private:

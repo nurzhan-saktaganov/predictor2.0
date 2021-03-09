@@ -88,9 +88,34 @@ namespace dvmpredictor {
 		expect(_is_declared(t));
 		expect(_is_distributable(t));
 
-		// TODO here
+		uint32_t at = t.id();
 
-		// TODO nested things
+		Shape &shape = _templates_meta[at].shape;
+
+		Disposition before = _templates_meta[at].disposition;
+
+		_distribute(shape, rule, _templates_meta[at].disposition);
+
+		// XXX: We don't send anyting on template redistribute
+		// _redistribute(before, _darrays_meta[at].disposition, 0, _mpi);
+
+		// nested redistribute
+		for (uint32_t i = 0; i < _darrays_meta.size(); i++) {
+			const Meta &meta = _darrays_meta[i];
+			DArray darray = meta.darray.d;
+
+			if (!_is_alignable(darray))
+				continue;
+
+			if (!meta.aligner.is_template)
+				continue;
+
+			if (meta.aligner.templ != t)
+				continue;
+
+			// realign every aligned on this root thing on this root again
+			realign_with(darray, t, meta.aligner.rule);
+		}
 	}
 
 	void PGrid::redistribute(DArray a, DRule rule)
@@ -98,9 +123,34 @@ namespace dvmpredictor {
 		expect(_is_declared(a));
 		expect(_is_distributable(a));
 
-		// TODO here
+		uint32_t at = a.id();
+		uint32_t elem_size = _darrays_meta[at].darray.elem_size;
 
-		// TODO nested things
+		Shape &shape = _darrays_meta[at].shape;
+
+		Disposition before = _darrays_meta[at].disposition;
+
+		_distribute(shape, rule, _darrays_meta[at].disposition);
+
+		_redistribute(before, _darrays_meta[at].disposition, elem_size, _mpi);
+
+		// nested redistribute
+		for (uint32_t i = 0; i < _darrays_meta.size(); i++) {
+			const Meta &meta = _darrays_meta[i];
+			DArray darray = meta.darray.d;
+
+			if (!_is_alignable(darray))
+				continue;
+
+			if (meta.aligner.is_template)
+				continue;
+
+			if (meta.aligner.darray != a)
+				continue;
+
+			// realign every aligned on this root thing on this root again
+			realign_with(darray, a, meta.aligner.rule);
+		}
 	}
 
 	void PGrid::_root_aligner(Meta &meta, Template via, ARule rule) const
@@ -205,7 +255,20 @@ namespace dvmpredictor {
 		expect(_is_declared(t));
 		expect(_is_distributed(t));
 
-		// TODO here realign array on template
+		uint32_t at = a.id();
+		uint32_t elem_size = _darrays_meta[at].darray.elem_size;
+
+		_root_aligner(_darrays_meta[at], t, rule);
+
+		Shape &shape = _darrays_meta[at].shape;
+		const Disposition &with = _templates_meta[t.id()].disposition;
+
+		// save the previous disposition
+		Disposition before = _darrays_meta[at].disposition;
+
+		_align(shape, with, rule, _darrays_meta[at].disposition);
+
+		_redistribute(before, _darrays_meta[at].disposition, elem_size, _mpi);
 	}
 
 	void PGrid::realign_with(DArray a, DArray b, ARule rule)
@@ -216,7 +279,20 @@ namespace dvmpredictor {
 		expect(_is_declared(b));
 		expect(_is_distributed(b));
 
-		// TODO here realign array on array
+		uint32_t at = a.id();
+		uint32_t elem_size = _darrays_meta[at].darray.elem_size;
+
+		_root_aligner(_darrays_meta[at], b, rule);
+
+		Shape &shape = _darrays_meta[at].shape;
+		const Disposition &with = _darrays_meta[b.id()].disposition;
+
+		// save the previous disposition
+		Disposition before = _darrays_meta[at].disposition;
+
+		_align(shape, with, rule, _darrays_meta[at].disposition);
+
+		_redistribute(before, _darrays_meta[at].disposition, elem_size, _mpi);
 	}
 
 	bool PGrid::_inited() const

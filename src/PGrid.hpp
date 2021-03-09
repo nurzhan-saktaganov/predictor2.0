@@ -21,6 +21,8 @@ namespace dvmpredictor {
 		PGrid(Shape shape, double latency, double bandwidth);
 
 		// TODO add validate to all public interface
+		// TODO support 'new_value' option on redistribute/realign
+		// TODO reduce duplicated code
 
 		Template declare_template(Shape shape);
 		DArray declare_darray(Shape shape, Shadow shadow, uint32_t elem_size);

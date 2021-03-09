@@ -15,4 +15,14 @@ namespace dvmpredictor {
 	{
 		return _id != id_undef;
 	}
+
+	bool Entity::operator==(const Entity &b) const
+	{
+		return _id == b._id;
+	}
+
+	bool Entity::operator!=(const Entity &b) const
+	{
+		return !(*this == b);
+	}
 }
