@@ -59,11 +59,11 @@ namespace mpisimulator {
 		_execute(at);
 	}
 
-	double MPIImpl::wtime(uint32_t at)
+	double MPIImpl::wtime(uint32_t at) const
 	{
 		expect(at < _size);
 
-		OperationQueue &ops = _nodes[at].ops;
+		const OperationQueue &ops = _nodes[at].ops;
 
 		expect(ops.empty());
 

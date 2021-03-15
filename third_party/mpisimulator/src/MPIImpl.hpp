@@ -15,7 +15,7 @@ namespace mpisimulator {
 
 		void skip(uint32_t at, double time);
 		void barrier(uint32_t at);
-		double wtime(uint32_t at);
+		double wtime(uint32_t at) const;
 
 	private:
 		void _execute(uint32_t at);

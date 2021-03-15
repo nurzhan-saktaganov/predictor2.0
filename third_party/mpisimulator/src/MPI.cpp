@@ -66,7 +66,7 @@ namespace mpisimulator {
 		impl->skip(at, time);
 	}
 
-	double MPI::wtime(uint32_t at)
+	double MPI::wtime(uint32_t at) const
 	{
 		expect(impl != nullptr);
 
