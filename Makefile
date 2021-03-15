@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -Wall -Werror -std=c++11 -fPIC
+CFLAGS = -Wall -Werror -std=c++11 -fPIC -g
 LDFLAGS =
 
 INC=-Iinclude -Ithird_party/mpisimulator/include

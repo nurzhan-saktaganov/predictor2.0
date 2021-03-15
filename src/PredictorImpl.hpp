@@ -16,6 +16,9 @@ namespace dvmpredictor {
 		PredictorImpl();
 		PredictorImpl(Shape pgrid, double latency, double bandwidth);
 
+		uint32_t rank() const;
+		double wtime(uint32_t node) const;
+
 		Template declare_template(Shape shape);
 		DArray declare_darray(Shape shape, Shadow shadow, uint32_t elem_size);
 

@@ -24,6 +24,9 @@ namespace dvmpredictor {
 		// TODO support 'new_value' option on redistribute/realign
 		// TODO reduce duplicated code
 
+		uint32_t rank() const;
+		double wtime(uint32_t node) const;
+
 		Template declare_template(Shape shape);
 		DArray declare_darray(Shape shape, Shadow shadow, uint32_t elem_size);
 

@@ -43,6 +43,20 @@ namespace dvmpredictor {
 		if (impl != nullptr) delete impl;
 	}
 
+	uint32_t Predictor::rank() const
+	{
+		expect(impl != nullptr);
+
+		return impl->rank();
+	}
+
+	double Predictor::wtime(uint32_t node) const
+	{
+		expect(impl != nullptr);
+
+		return impl->wtime(node);
+	}
+
 	Template Predictor::declare_template(Shape shape)
 	{
 		expect(impl != nullptr);

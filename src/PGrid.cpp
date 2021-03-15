@@ -22,6 +22,16 @@ namespace dvmpredictor {
 		_mpi = mpisimulator::MPI(_rank(), latency, bandwidth);
 	}
 
+	uint32_t PGrid::rank() const
+	{
+		return volume(_shape);
+	}
+
+	double PGrid::wtime(uint32_t node) const
+	{
+		return _mpi.wtime(node);
+	}
+
 	Template PGrid::declare_template(Shape shape)
 	{
 		expect(_inited());
@@ -77,7 +87,7 @@ namespace dvmpredictor {
 
 		uint32_t at = a.id();
 
-		_templates_meta[at].type = Meta::DISTRIBUTABLE;
+		_darrays_meta[at].type = Meta::DISTRIBUTABLE;
 
 		Shape &shape = _darrays_meta[at].shape;
 		_distribute(shape, rule, _darrays_meta[at].disposition);
@@ -335,7 +345,7 @@ namespace dvmpredictor {
 	{
 		uint32_t at  = a.id();
 
-		return _templates_meta[at].type == Meta::DISTRIBUTABLE;
+		return _darrays_meta[at].type == Meta::DISTRIBUTABLE;
 	}
 
 	bool PGrid::_is_alignable(Template t) const
@@ -561,12 +571,19 @@ namespace dvmpredictor {
 			for (uint32_t i = 0; i < senders.size(); i++) {
 				uint32_t sender = senders[i];
 				const Shape &local = before[sender];
+
 				Shape part(local.size());
 
 				shape_intersect(target, local, part);
 
-				uint32_t elem_cnt = volume(part);
+				uint64_t elem_cnt = volume(part);
 				total_received += elem_cnt;
+
+				if (sender == receiver)
+					// Don't communicate with self.
+					// But we have to check the consistency via
+					// accumalating 'total_received' above.
+					continue;
 
 				uint64_t bytes = elem_cnt * elem_size;
 

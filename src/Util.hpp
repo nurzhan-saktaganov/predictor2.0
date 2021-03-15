@@ -107,7 +107,7 @@ namespace dvmpredictor {
 
 	static inline bool shape_intersects(const Shape &a, const Shape &b)
 	{
-		Shape out;
+		Shape out(a.size());
 
 		shape_intersect(a, b, out);
 

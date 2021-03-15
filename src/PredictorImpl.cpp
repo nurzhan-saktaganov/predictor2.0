@@ -7,6 +7,16 @@ namespace dvmpredictor {
 		_pgrid(pgrid, latency, bandwidth)
 	{}
 
+	uint32_t PredictorImpl::rank() const
+	{
+		return _pgrid.rank();
+	}
+
+	double PredictorImpl::wtime(uint32_t node) const
+	{
+		return _pgrid.wtime(node);
+	}
+
 	Template PredictorImpl::declare_template(Shape shape)
 	{
 		return _pgrid.declare_template(shape);
